@@ -54,7 +54,7 @@
         >
           <NuxtLink to="/" class="text-gray-100 hover:text-indigo-400">Inicio</NuxtLink>
           <NuxtLink to="/pokemons" class="text-gray-100 hover:text-indigo-400">Pokemons</NuxtLink>
-          <NuxtLink to="/compare" class="text-gray-100 hover:text-indigo-400">Comparador</NuxtLink>
+          <NuxtLink to="/" class="text-gray-100 hover:text-indigo-400">Comparador</NuxtLink>
 
         </ul>
       </nav>

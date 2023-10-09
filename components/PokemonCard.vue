@@ -1,9 +1,4 @@
 <template>
-<!-- <v-card class="flex w-1/5">
-    {{ pokemon.name }}
-    <v-img v-if="pokemon.sprites" :src="pokemon.sprites.other['official-artwork'].front_default" class="w-1/2"/>
-</v-card> -->
-
 <div class="flex w-1/5 blur-in-expand">
         <div class="p-4 bg-white rounded-xl shadow-md overflow-hidden" :style="getBorderColor(pokemon.types)">
           <div class="md:flex md:flex-col">
