@@ -5,15 +5,28 @@
     let page = 0;
     let loadingPokemons = ref(false);
 
+    // SEO Meta tags
+    useHead({
+        title: 'Pokémon - Explora todos los Pokémon | PokéApp',
+        meta: [
+            { name: 'description', content: 'Explora la lista completa de Pokémon con sus estadísticas, tipos y habilidades. Descubre información detallada de cada Pokémon.' },
+            { property: 'og:title', content: 'Pokémon - Explora todos los Pokémon | PokéApp' },
+            { property: 'og:description', content: 'Explora la lista completa de Pokémon con información detallada.' },
+            { property: 'og:type', content: 'website' },
+            { name: 'twitter:card', content: 'summary' }
+        ]
+    });
+
     const getPokemons = async () => {
         loadingPokemons.value = true;
         const { data } = await useFetch(`https://pokeapi.co/api/v2/pokemon?limit=${pokemonPerPage}&offset=${page * pokemonPerPage}`) as any;
 
-        for await (const pokemon of data.value.results) {
-            const pkmResponse =  await $fetch(pokemon.url) as any;
-            pokemons.value.push(pkmResponse);
-        }
+        // Fetch all Pokemon details in parallel for better performance
+        const pokemonDetails = await Promise.all(
+            data.value.results.map((pokemon: any) => $fetch(pokemon.url))
+        );
 
+        pokemons.value.push(...pokemonDetails);
         page++;
         loadingPokemons.value = false;
     }

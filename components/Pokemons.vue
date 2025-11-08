@@ -13,12 +13,13 @@ const props = defineProps({
   }
 });
 
-const { pokemons,loadingPokemons } = props;
+const { pokemons, loadingPokemons } = props;
 
-watch(pokemons, () => {
-    if(intersectionActive.value) return;
+// Setup IntersectionObserver only on client side
+onMounted(() => {
+  if (!demo.value || intersectionActive.value) return;
 
-    const observer = new IntersectionObserver(
+  const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !loadingPokemons) {
@@ -32,11 +33,8 @@ watch(pokemons, () => {
     }
   );
 
-  // observe each element
-  if (demo.value) {
-    observer.observe(demo.value);
-    intersectionActive.value = true;
-  }
+  observer.observe(demo.value);
+  intersectionActive.value = true;
 });
 
 </script>
