@@ -26,11 +26,16 @@ onMounted(() => {
 const navLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
   { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
-  { to: '/advanced-search', label: 'Advanced Search', icon: 'mdi:filter-cog' },
+  { to: '/advanced-search', label: 'Search', icon: 'mdi:filter-cog' },
   { to: '/generations', label: 'Generations', icon: 'mdi:earth' },
-  { to: '/team-builder', label: 'Team Builder', icon: 'mdi:account-group', badge: teamCount },
+  { to: '/team-builder', label: 'Team', icon: 'mdi:account-group', badge: teamCount },
   { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
+  { to: '/collection/checklist', label: 'Checklist', icon: 'mdi:checkbox-marked-circle-outline' },
+  { to: '/tools/damage-calculator', label: 'Damage Calc', icon: 'mdi:calculator' },
+  { to: '/tools/random-generators', label: 'Random', icon: 'mdi:dice-multiple' },
+  { to: '/moves', label: 'Moves', icon: 'mdi:sword-cross' },
+  { to: '/abilities', label: 'Abilities', icon: 'mdi:shield-star' },
   { to: '/stats', label: 'Stats', icon: 'mdi:chart-box-outline' },
 ]
 
