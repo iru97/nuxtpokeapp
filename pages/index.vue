@@ -35,9 +35,13 @@ const stats = [
 // Quick links
 const quickLinks = [
   { to: '/pokemons', icon: 'mdi:pokeball', label: 'Browse All', description: 'Explore the complete Pokédex', color: '#ef5350' },
+  { to: '/advanced-search', icon: 'mdi:filter-cog', label: 'Advanced Search', description: 'Find with detailed filters', color: '#42a5f5' },
+  { to: '/team-builder', icon: 'mdi:account-group', label: 'Team Builder', description: 'Build your dream team', color: '#66bb6a' },
+  { to: '/compare', icon: 'mdi:compare', label: 'Compare', description: 'Compare up to 3 Pokémon', color: '#ffa726' },
+  { to: '/generations', icon: 'mdi:earth', label: 'Generations', description: 'Browse by generation', color: '#9c27b0' },
+  { to: '/stats', icon: 'mdi:chart-box-outline', label: 'Statistics', description: 'Pokémon insights & records', color: '#26c6da' },
   { to: '/favorites', icon: 'mdi:heart', label: 'Favorites', description: 'Your saved Pokémon', color: '#ec407a' },
   { to: '/pokemons?generation=1', icon: 'mdi:fire', label: 'Gen I', description: 'Classic Kanto Pokémon', color: '#ff9800' },
-  { to: '/pokemons?generation=9', icon: 'mdi:sparkles', label: 'Latest Gen', description: 'New Paldea Pokémon', color: '#9c27b0' },
 ]
 
 // Load featured Pokemon

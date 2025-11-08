@@ -24,10 +24,12 @@ onMounted(() => {
 const navLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
   { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
+  { to: '/advanced-search', label: 'Advanced Search', icon: 'mdi:filter-cog' },
   { to: '/generations', label: 'Generations', icon: 'mdi:earth' },
   { to: '/team-builder', label: 'Team Builder', icon: 'mdi:account-group', badge: teamCount },
   { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
+  { to: '/stats', label: 'Stats', icon: 'mdi:chart-box-outline' },
 ]
 
 const isActiveRoute = (path: string) => {

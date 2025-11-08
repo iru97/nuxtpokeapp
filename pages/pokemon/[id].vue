@@ -65,6 +65,13 @@ useHead({
   ]
 })
 
+// Shiny toggle state
+const showShiny = ref(false)
+
+const toggleShiny = () => {
+  showShiny.value = !showShiny.value
+}
+
 // Tab configuration
 const tabs = [
   { id: 'stats', label: 'Stats', icon: 'mdi:chart-bar' },
@@ -111,6 +118,8 @@ onMounted(() => {
       <PokemonDetailHeader
         :pokemon="pokemon"
         :species="species"
+        :show-shiny="showShiny"
+        @toggle-shiny="toggleShiny"
       />
 
       <!-- Tabbed Content -->

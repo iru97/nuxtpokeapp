@@ -5,13 +5,34 @@ import { TYPE_COLORS } from '~/constants/pokemon'
 interface Props {
   pokemon: Pokemon
   species?: PokemonSpecies | null
+  showShiny?: boolean
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits<{
+  'toggle-shiny': []
+}>()
+
 const router = useRouter()
 const favoritesStore = useFavoritesStore()
 
 const isFavorite = computed(() => favoritesStore.isFavorite(props.pokemon.id))
+
+const toggleShiny = () => {
+  emit('toggle-shiny')
+}
+
+// Get current sprite based on shiny state
+const currentSprite = computed(() => {
+  if (props.showShiny) {
+    return props.pokemon.sprites.other?.['official-artwork']?.front_shiny ||
+           props.pokemon.sprites.front_shiny ||
+           props.pokemon.sprites.other?.['official-artwork']?.front_default ||
+           props.pokemon.sprites.front_default
+  }
+  return props.pokemon.sprites.other?.['official-artwork']?.front_default ||
+         props.pokemon.sprites.front_default
+})
 
 const primaryType = computed(() => {
   return props.pokemon.types[0]?.type.name || 'normal'
@@ -86,13 +107,25 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
           </button>
         </div>
 
-        <button
-          class="detail-header__favorite"
-          :class="{ 'detail-header__favorite--active': isFavorite }"
-          @click="toggleFavorite"
-        >
-          <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
-        </button>
+        <div class="detail-header__actions">
+          <button
+            class="detail-header__action detail-header__shiny"
+            :class="{ 'detail-header__action--active': showShiny }"
+            @click="toggleShiny"
+            title="Toggle Shiny"
+          >
+            <Icon name="mdi:sparkles" />
+          </button>
+
+          <button
+            class="detail-header__action detail-header__favorite"
+            :class="{ 'detail-header__action--active': isFavorite }"
+            @click="toggleFavorite"
+            title="Add to Favorites"
+          >
+            <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
+          </button>
+        </div>
       </div>
 
       <!-- Main Content -->
@@ -100,8 +133,12 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
         <!-- Image -->
         <div class="detail-header__image-container">
           <div class="detail-header__image-bg" />
+          <div v-if="showShiny" class="detail-header__shiny-badge">
+            <Icon name="mdi:sparkles" />
+            <span>Shiny</span>
+          </div>
           <NuxtImg
-            :src="pokemon.sprites.other['official-artwork']?.front_default || pokemon.sprites.front_default"
+            :src="currentSprite"
             :alt="pokemon.name"
             class="detail-header__image"
             width="400"
@@ -266,7 +303,12 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
     }
   }
 
-  &__favorite {
+  &__actions {
+    @include flex-center;
+    gap: $spacing-2;
+  }
+
+  &__action {
     @include reset-button;
     @include flex-center;
     width: 48px;
@@ -279,17 +321,38 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
 
     &:hover {
       box-shadow: $shadow-md;
-      color: $error;
       transform: scale(1.1);
     }
 
     &--active {
-      color: $error;
-      background: rgba($error, 0.1);
+      background: rgba($primary, 0.1);
     }
 
     svg {
       font-size: 28px;
+    }
+  }
+
+  &__shiny {
+    &:hover {
+      color: $warning;
+    }
+
+    &.detail-header__action--active {
+      color: $warning;
+      background: rgba($warning, 0.1);
+      animation: sparkle 1s ease-in-out infinite;
+    }
+  }
+
+  &__favorite {
+    &:hover {
+      color: $error;
+    }
+
+    &.detail-header__action--active {
+      color: $error;
+      background: rgba($error, 0.1);
     }
   }
 
@@ -326,6 +389,27 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
     height: auto;
     filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
     animation: float 6s ease-in-out infinite;
+  }
+
+  &__shiny-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    @include flex-center;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-4;
+    background: linear-gradient(135deg, $warning 0%, darken($warning, 10%) 100%);
+    color: $white;
+    border-radius: $radius-full;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    box-shadow: $shadow-lg;
+    z-index: 10;
+    animation: sparkle 1s ease-in-out infinite;
+
+    svg {
+      font-size: 20px;
+    }
   }
 
   &__info {
@@ -453,6 +537,17 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
   }
 }
 </style>
