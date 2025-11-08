@@ -64,15 +64,15 @@ const clearTeam = () => {
 
 // Save team dialog
 const showSaveDialog = ref(false)
-const saveTeamName = ref('')
+const newTeamName = ref('')
 
 const openSaveDialog = () => {
-  saveTeamName.value = teamStore.currentTeamName
+  newTeamName.value = teamStore.currentTeamName
   showSaveDialog.value = true
 }
 
 const saveCurrentTeam = () => {
-  if (teamStore.saveTeam(saveTeamName.value)) {
+  if (teamStore.saveTeam(newTeamName.value)) {
     showSaveDialog.value = false
     alert('Team saved successfully!')
   }
@@ -422,7 +422,7 @@ const goToPokedex = () => {
             <h3 class="modal__title">Save Team</h3>
 
             <input
-              v-model="saveTeamName"
+              v-model="newTeamName"
               type="text"
               placeholder="Team name..."
               class="modal__input"

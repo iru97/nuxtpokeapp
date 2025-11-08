@@ -362,7 +362,7 @@ const goBack = () => {
 
   &__title {
     margin: 0;
-    font-size: $font-size-6xl;
+    font-size: $font-size-5xl;
     font-weight: $font-weight-bold;
     font-family: $font-family-secondary;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
