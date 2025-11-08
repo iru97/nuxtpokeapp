@@ -72,9 +72,13 @@ const handleClickOutside = (event: MouseEvent) => {
   // Check if click is on ANY link (NuxtLink, anchor tag, or their children)
   const isLink = target.closest('a[href]')
 
-  // If clicking any link anywhere, let it navigate
-  // The route watcher will close the dropdown after navigation
+  // If clicking any link anywhere, cancel any pending close timeout and let it navigate
+  // The route watcher will close the dropdown after navigation completes
   if (isLink) {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+      hoverTimeout = null
+    }
     return
   }
 
