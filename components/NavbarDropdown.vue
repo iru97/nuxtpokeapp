@@ -67,13 +67,22 @@ const handleClick = () => {
 
 // Handle click outside
 const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement
+
+  // Check if click is on a NuxtLink or its children
+  const isLink = target.closest('a[href]')
+
   if (
     dropdownRef.value &&
     triggerRef.value &&
-    !dropdownRef.value.contains(event.target as Node) &&
-    !triggerRef.value.contains(event.target as Node)
+    !dropdownRef.value.contains(target) &&
+    !triggerRef.value.contains(target)
   ) {
     closeDropdown()
+  } else if (isLink && dropdownRef.value?.contains(target)) {
+    // If clicking a link inside dropdown, let it navigate
+    // The route watcher will close the dropdown after navigation
+    return
   }
 }
 
@@ -143,7 +152,6 @@ watch(() => route.path, () => {
           class="navbar-dropdown__item"
           :class="{ 'navbar-dropdown__item--active': route.path === item.to || (item.to === '/generations' && route.path.startsWith('/generations')) }"
           role="menuitem"
-          @click.stop
         >
           <Icon :name="item.icon" aria-hidden="true" />
           <span>{{ item.label }}</span>
