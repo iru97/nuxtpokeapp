@@ -90,25 +90,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <nav class="navbar">
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar__container">
       <!-- Logo -->
-      <NuxtLink to="/" class="navbar__logo" @click="closeMobileMenu">
-        <Icon name="mdi:pokeball" class="navbar__logo-icon" />
+      <NuxtLink to="/" class="navbar__logo" @click="closeMobileMenu" aria-label="PokéApp home">
+        <Icon name="mdi:pokeball" class="navbar__logo-icon" aria-hidden="true" />
         <span class="navbar__logo-text">PokéApp</span>
       </NuxtLink>
 
       <!-- Desktop Navigation -->
-      <ul class="navbar__nav">
-        <li v-for="link in navLinks" :key="link.to">
+      <ul class="navbar__nav" role="menubar">
+        <li v-for="link in navLinks" :key="link.to" role="none">
           <NuxtLink
             :to="link.to"
             class="navbar__link"
             :class="{ 'navbar__link--active': isActiveRoute(link.to) }"
+            role="menuitem"
+            :aria-current="isActiveRoute(link.to) ? 'page' : undefined"
           >
-            <Icon :name="link.icon" />
+            <Icon :name="link.icon" aria-hidden="true" />
             <span>{{ link.label }}</span>
-            <span v-if="link.badge && link.badge.value > 0" class="navbar__badge">
+            <span v-if="link.badge && link.badge.value > 0" class="navbar__badge" :aria-label="`${link.badge.value} items`">
               {{ link.badge.value }}
             </span>
           </NuxtLink>
@@ -120,37 +122,42 @@ onMounted(() => {
         <!-- Search Button -->
         <button
           class="navbar__action-btn"
-          title="Search (Ctrl+K)"
+          aria-label="Search Pokémon (Keyboard shortcut: Control or Command + K)"
           @click="openSearch"
         >
-          <Icon name="mdi:magnify" />
-          <span class="navbar__search-hint">⌘K</span>
+          <Icon name="mdi:magnify" aria-hidden="true" />
+          <span class="navbar__search-hint" aria-hidden="true">⌘K</span>
         </button>
 
         <!-- Mobile Menu Toggle -->
         <button
           class="navbar__mobile-toggle"
+          :aria-label="showMobileMenu ? 'Close menu' : 'Open menu'"
+          :aria-expanded="showMobileMenu"
+          aria-controls="mobile-menu"
           @click="toggleMobileMenu"
         >
-          <Icon :name="showMobileMenu ? 'mdi:close' : 'mdi:menu'" />
+          <Icon :name="showMobileMenu ? 'mdi:close' : 'mdi:menu'" aria-hidden="true" />
         </button>
       </div>
     </div>
 
     <!-- Mobile Menu -->
     <Transition name="slide-down">
-      <div v-if="showMobileMenu" class="navbar__mobile-menu">
+      <div v-if="showMobileMenu" id="mobile-menu" class="navbar__mobile-menu" role="menu">
         <ul class="navbar__mobile-nav">
-          <li v-for="link in navLinks" :key="link.to">
+          <li v-for="link in navLinks" :key="link.to" role="none">
             <NuxtLink
               :to="link.to"
               class="navbar__mobile-link"
               :class="{ 'navbar__mobile-link--active': isActiveRoute(link.to) }"
+              role="menuitem"
+              :aria-current="isActiveRoute(link.to) ? 'page' : undefined"
               @click="closeMobileMenu"
             >
-              <Icon :name="link.icon" />
+              <Icon :name="link.icon" aria-hidden="true" />
               <span>{{ link.label }}</span>
-              <span v-if="link.badge && link.badge.value > 0" class="navbar__badge">
+              <span v-if="link.badge && link.badge.value > 0" class="navbar__badge" :aria-label="`${link.badge.value} items`">
                 {{ link.badge.value }}
               </span>
             </NuxtLink>
@@ -161,24 +168,33 @@ onMounted(() => {
 
     <!-- Search Modal -->
     <Transition name="fade">
-      <div v-if="showSearchModal" class="search-modal" @click.self="closeSearch">
+      <div
+        v-if="showSearchModal"
+        class="search-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="search-modal-title"
+        @click.self="closeSearch"
+      >
         <div class="search-modal__content">
           <div class="search-modal__header">
-            <Icon name="mdi:magnify" class="search-modal__icon" />
+            <Icon name="mdi:magnify" class="search-modal__icon" aria-hidden="true" />
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Search Pokémon by name or number..."
               class="search-modal__input"
+              aria-label="Search Pokémon"
               autofocus
               @keyup.enter="handleSearch"
               @keyup.esc="closeSearch"
             />
             <button
               class="search-modal__close"
+              aria-label="Close search"
               @click="closeSearch"
             >
-              <Icon name="mdi:close" />
+              <Icon name="mdi:close" aria-hidden="true" />
             </button>
           </div>
 
@@ -313,12 +329,13 @@ onMounted(() => {
   &__action-btn {
     @include reset-button;
     @include flex-center;
+    @include spring-bounce;
+    @include accessible-focus($accent);
     gap: $spacing-2;
     padding: $spacing-2 $spacing-3;
     background: rgba($white, 0.1);
     color: $white;
     border-radius: $radius-lg;
-    transition: all $transition-fast;
 
     &:hover {
       background: rgba($white, 0.2);
@@ -345,11 +362,12 @@ onMounted(() => {
   &__mobile-toggle {
     @include reset-button;
     @include flex-center;
+    @include spring-bounce;
+    @include accessible-focus($accent);
     width: 40px;
     height: 40px;
     color: $white;
     border-radius: $radius-lg;
-    transition: all $transition-fast;
 
     &:hover {
       background: rgba($white, 0.1);
@@ -413,10 +431,14 @@ onMounted(() => {
   &__content {
     width: 100%;
     max-width: 600px;
-    background: $white;
+    @include glass-morphism(0.98, 20px);
     border-radius: $radius-xl;
     box-shadow: $shadow-2xl;
     animation: modalSlideUp 0.3s ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   &__header {
@@ -445,11 +467,12 @@ onMounted(() => {
   &__close {
     @include reset-button;
     @include flex-center;
+    @include spring-bounce;
+    @include accessible-focus;
     width: 40px;
     height: 40px;
     border-radius: $radius-full;
     color: $text-secondary;
-    transition: all $transition-fast;
 
     &:hover {
       background: $gray-100;
@@ -509,16 +532,28 @@ onMounted(() => {
 .slide-down-enter-active,
 .slide-down-leave-active {
   transition: all 0.3s ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity 0.15s ease;
+  }
 }
 
 .slide-down-enter-from {
   opacity: 0;
   transform: translateY(-20px);
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+  }
 }
 
 .slide-down-leave-to {
   opacity: 0;
   transform: translateY(-20px);
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+  }
 }
 
 .fade-enter-active,
@@ -529,5 +564,18 @@ onMounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+// Reduced motion support for logo animation
+.navbar__logo {
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+
+      .navbar__logo-icon {
+        animation: none;
+      }
+    }
+  }
 }
 </style>

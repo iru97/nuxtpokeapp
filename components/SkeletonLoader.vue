@@ -40,12 +40,14 @@ const variantStyles = computed(() => {
   <div
     class="skeleton-loader"
     :style="variantStyles"
+    role="status"
+    aria-label="Loading"
   />
 </template>
 
 <style scoped lang="scss">
 .skeleton-loader {
-  @include skeleton-loading;
+  @include skeleton-shimmer;
   display: inline-block;
 }
 </style>

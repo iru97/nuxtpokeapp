@@ -119,15 +119,18 @@ const goToDetail = () => {
     class="pokemon-card"
     :style="{ '--type-color': typeColor }"
     @click="goToDetail"
+    role="article"
+    :aria-label="`${pokemon.name} Pokemon card`"
   >
     <div class="pokemon-card__header">
       <span class="pokemon-card__id">#{{ String(pokemon.id).padStart(3, '0') }}</span>
-      <div class="pokemon-card__actions">
+      <div class="pokemon-card__actions" role="group" aria-label="Pokemon actions">
         <button
           class="pokemon-card__action pokemon-card__team"
           :class="{ 'pokemon-card__action--active': isInTeam }"
           @click="toggleTeam"
-          title="Add to team"
+          :aria-label="isInTeam ? `Remove ${pokemon.name} from team` : `Add ${pokemon.name} to team`"
+          :aria-pressed="isInTeam"
         >
           <Icon :name="isInTeam ? 'mdi:account-group' : 'mdi:account-group-outline'" />
         </button>
@@ -135,7 +138,8 @@ const goToDetail = () => {
           class="pokemon-card__action"
           :class="{ 'pokemon-card__action--active': isInComparison }"
           @click="toggleComparison"
-          title="Add to comparison"
+          :aria-label="isInComparison ? `Remove ${pokemon.name} from comparison` : `Add ${pokemon.name} to comparison`"
+          :aria-pressed="isInComparison"
         >
           <Icon :name="isInComparison ? 'mdi:compare' : 'mdi:compare'" />
         </button>
@@ -143,7 +147,8 @@ const goToDetail = () => {
           class="pokemon-card__action pokemon-card__favorite"
           :class="{ 'pokemon-card__action--active': isFavorite }"
           @click="toggleFavorite"
-          title="Add to favorites"
+          :aria-label="isFavorite ? `Remove ${pokemon.name} from favorites` : `Add ${pokemon.name} to favorites`"
+          :aria-pressed="isFavorite"
         >
           <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
         </button>
@@ -279,16 +284,16 @@ const goToDetail = () => {
   &__action {
     @include reset-button;
     @include flex-center;
+    @include spring-bounce;
+    @include accessible-focus;
     width: 32px;
     height: 32px;
     border-radius: $radius-full;
     color: $gray-400;
     background-color: $gray-100;
-    transition: all $transition-fast;
 
     &:hover {
       background-color: $gray-200;
-      transform: scale(1.1);
     }
 
     &--active {
@@ -374,7 +379,7 @@ const goToDetail = () => {
     gap: $spacing-2;
     margin-bottom: $spacing-3;
     padding: $spacing-3;
-    background-color: $gray-50;
+    @include glass-morphism(0.9, 8px);
     border-radius: $radius-md;
   }
 
@@ -479,6 +484,10 @@ const goToDetail = () => {
 // Animation on mount
 .pokemon-card {
   animation: fadeInUp 0.4s ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 @keyframes fadeInUp {
@@ -489,6 +498,23 @@ const goToDetail = () => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Reduced motion support for card interactions
+.pokemon-card {
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+
+      .pokemon-card__img {
+        transform: none;
+      }
+
+      .pokemon-card__shine {
+        left: -100%;
+      }
+    }
   }
 }
 </style>
