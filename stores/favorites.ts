@@ -236,6 +236,5 @@ export const useFavoritesStore = defineStore('favorites', {
 
   persist: {
     key: 'pokemon-favorites',
-    storage: persistedState.localStorage,
   },
 })

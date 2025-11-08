@@ -202,6 +202,5 @@ export const useFiltersStore = defineStore('filters', {
 
   persist: {
     key: 'pokemon-filters',
-    storage: persistedState.localStorage,
   },
 })

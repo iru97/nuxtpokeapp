@@ -433,7 +433,7 @@ const goToDetail = () => {
     left: 0;
     top: 0;
     height: 100%;
-    background: linear-gradient(90deg, var(--type-color), lighten(var(--type-color), 20%));
+    background: linear-gradient(90deg, var(--type-color) 0%, color-mix(in srgb, var(--type-color) 80%, white) 100%);
     border-radius: $radius-full;
     transition: width $transition-slow;
   }
