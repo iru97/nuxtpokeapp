@@ -114,22 +114,34 @@ const categories = ['physical', 'special', 'status']
 
           <div class="move-card__stats">
             <div class="stat">
-              <span class="stat__label">Category</span>
-              <span class="stat__value damage-class" :class="move.damage_class?.name">
-                {{ move.damage_class?.name || 'N/A' }}
-              </span>
+              <Icon name="mdi:shape" class="stat__icon" />
+              <div class="stat__content">
+                <span class="stat__label">Category</span>
+                <span class="stat__value damage-class" :class="move.damage_class?.name">
+                  {{ move.damage_class?.name || 'N/A' }}
+                </span>
+              </div>
             </div>
             <div class="stat">
-              <span class="stat__label">Power</span>
-              <span class="stat__value">{{ move.power || '—' }}</span>
+              <Icon name="mdi:flash" class="stat__icon" />
+              <div class="stat__content">
+                <span class="stat__label">Power</span>
+                <span class="stat__value">{{ move.power || '—' }}</span>
+              </div>
             </div>
             <div class="stat">
-              <span class="stat__label">Accuracy</span>
-              <span class="stat__value">{{ move.accuracy ? `${move.accuracy}%` : '—' }}</span>
+              <Icon name="mdi:target" class="stat__icon" />
+              <div class="stat__content">
+                <span class="stat__label">Accuracy</span>
+                <span class="stat__value">{{ move.accuracy ? `${move.accuracy}%` : '—' }}</span>
+              </div>
             </div>
             <div class="stat">
-              <span class="stat__label">PP</span>
-              <span class="stat__value">{{ move.pp || '—' }}</span>
+              <Icon name="mdi:repeat" class="stat__icon" />
+              <div class="stat__content">
+                <span class="stat__label">PP</span>
+                <span class="stat__value">{{ move.pp || '—' }}</span>
+              </div>
             </div>
           </div>
 
@@ -203,8 +215,12 @@ const categories = ['physical', 'special', 'status']
 
 .moves-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: $spacing-4;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .move-card {
@@ -262,8 +278,22 @@ const categories = ['physical', 'special', 'status']
 
 .stat {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: $spacing-2;
+
+  &__icon {
+    font-size: 24px;
+    color: $primary;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
 
   &__label {
     font-size: $font-size-xs;
@@ -285,6 +315,7 @@ const categories = ['physical', 'special', 'status']
       display: inline-block;
       font-size: $font-size-xs;
       font-weight: $font-weight-bold;
+      width: fit-content;
 
       &.physical {
         background: rgba($error, 0.2);
