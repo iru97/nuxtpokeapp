@@ -105,17 +105,15 @@ watch(() => route.path, () => {
 </script>
 
 <template>
-  <div
-    class="navbar-dropdown"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="navbar-dropdown">
     <button
       ref="triggerRef"
       class="navbar-dropdown__trigger"
       :class="{ 'navbar-dropdown__trigger--active': hasActiveItem || isOpen }"
       :aria-expanded="isOpen"
       :aria-haspopup="true"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
       @click="handleClick"
     >
       <Icon :name="icon" aria-hidden="true" />
@@ -135,6 +133,8 @@ watch(() => route.path, () => {
         class="navbar-dropdown__menu"
         role="menu"
         :aria-label="`${label} menu`"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
       >
         <NuxtLink
           v-for="item in items"

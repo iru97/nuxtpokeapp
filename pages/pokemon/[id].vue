@@ -117,7 +117,7 @@ onMounted(() => {
     <!-- Detail Content -->
     <div v-else class="pokemon-detail__container">
       <!-- Header -->
-      <PokemonDetailHeader
+      <DetailPokemonDetailHeader
         :pokemon="pokemon"
         :species="species"
         :show-shiny="showShiny"
@@ -129,7 +129,7 @@ onMounted(() => {
         <Tabs v-model="activeTab" :tabs="tabs">
           <!-- Stats Tab -->
           <div v-if="activeTab === 'stats'">
-            <PokemonStats :pokemon="pokemon" />
+            <DetailPokemonStats :pokemon="pokemon" />
 
             <!-- Pokemon Cries Audio -->
             <div v-if="pokemon.cries" style="margin-top: 2rem;">
@@ -142,17 +142,17 @@ onMounted(() => {
 
           <!-- Evolution Tab -->
           <div v-if="activeTab === 'evolution'">
-            <PokemonEvolution :evolution-chain-url="evolutionChainUrl" />
+            <DetailPokemonEvolution :evolution-chain-url="evolutionChainUrl" />
           </div>
 
           <!-- Moves Tab -->
           <div v-if="activeTab === 'moves'">
-            <PokemonMoves :pokemon="pokemon" />
+            <DetailPokemonMoves :pokemon="pokemon" />
           </div>
 
           <!-- Abilities Tab -->
           <div v-if="activeTab === 'abilities'">
-            <PokemonAbilities :pokemon="pokemon" />
+            <DetailPokemonAbilities :pokemon="pokemon" />
           </div>
 
           <!-- Pokedex Tab (Flavor Texts) -->
@@ -178,7 +178,7 @@ onMounted(() => {
 
           <!-- Sprites Tab -->
           <div v-if="activeTab === 'sprites'">
-            <PokemonSprites :pokemon="pokemon" />
+            <DetailPokemonSprites :pokemon="pokemon" />
           </div>
         </Tabs>
       </div>
