@@ -154,16 +154,25 @@ watch(() => collectionStore.dailyStreak, () => {
           }"
           @click="collectionStore.toggleOwned(id)"
         >
-          <div class="item__checkbox">
-            <Icon
-              :name="collectionStore.isOwned(id) ? 'mdi:checkbox-marked' : 'mdi:checkbox-blank-outline'"
+          <div class="item__sprite">
+            <img
+              :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`"
+              :alt="`Pokemon ${id}`"
+              loading="lazy"
+              class="sprite-image"
+              :class="{ grayscale: !collectionStore.isOwned(id) }"
             />
+            <div v-if="collectionStore.isOwned(id)" class="check-badge">
+              <Icon name="mdi:check-circle" />
+            </div>
           </div>
           <div class="item__number">#{{ String(id).padStart(3, '0') }}</div>
           <button
+            v-if="collectionStore.isOwned(id)"
             class="item__shiny"
             :class="{ active: collectionStore.hasShiny(id) }"
             @click.stop="collectionStore.toggleShiny(id)"
+            title="Mark as shiny"
           >
             <Icon name="mdi:star" />
           </button>
@@ -192,6 +201,11 @@ watch(() => collectionStore.dailyStreak, () => {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: $spacing-4;
   margin-bottom: $spacing-4;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-3;
+  }
 }
 
 .stat {
@@ -276,11 +290,25 @@ watch(() => collectionStore.dailyStreak, () => {
   margin-bottom: $spacing-6;
   flex-wrap: wrap;
   gap: $spacing-4;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .filter-buttons {
   display: flex;
   gap: $spacing-2;
+  flex-wrap: wrap;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+
+    .filter-btn {
+      flex: 1;
+    }
+  }
 }
 
 .filter-btn {
@@ -308,8 +336,17 @@ watch(() => collectionStore.dailyStreak, () => {
 
 .checklist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: $spacing-3;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: $spacing-2;
+  }
 }
 
 .checklist-item {
@@ -325,6 +362,7 @@ watch(() => collectionStore.dailyStreak, () => {
   cursor: pointer;
   transition: all $transition-base;
   position: relative;
+  overflow: hidden;
 
   @at-root .dark & {
     background: $dark-surface;
@@ -332,35 +370,84 @@ watch(() => collectionStore.dailyStreak, () => {
   }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) scale(1.05);
     box-shadow: $shadow-lg;
     border-color: $primary;
-  }
 
-  &.owned {
-    background: rgba($success, 0.1);
-    border-color: $success;
-
-    .item__checkbox {
-      color: $success;
+    .sprite-image.grayscale {
+      filter: grayscale(0.5); // Preview color on hover
     }
   }
 
-  &.shiny {
-    background: linear-gradient(135deg, rgba($warning, 0.2), rgba($error, 0.2));
+  &.owned {
+    background: rgba($success, 0.05);
+    border-color: $success;
   }
 
-  &__checkbox {
-    font-size: 24px;
-    color: $gray-400;
+  &.shiny {
+    background: linear-gradient(135deg, rgba($warning, 0.15), rgba($error, 0.15));
+    border-color: $warning;
+
+    &::after {
+      content: '✨';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      font-size: 16px;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+  }
+
+  &__sprite {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: $spacing-1;
+
+    .sprite-image {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      transition: all $transition-base;
+
+      &.grayscale {
+        filter: grayscale(1);
+        opacity: 0.4;
+      }
+
+      @media (max-width: $breakpoint-sm) {
+        width: 56px;
+        height: 56px;
+      }
+    }
+
+    .check-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      background: $success;
+      color: $white;
+      border-radius: $radius-full;
+      width: 24px;
+      height: 24px;
+      @include flex-center;
+      box-shadow: $shadow-md;
+      animation: bounceIn 0.3s ease-out;
+
+      svg {
+        font-size: 16px;
+      }
+    }
   }
 
   &__number {
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: $font-weight-bold;
     font-family: $font-family-mono;
-    color: $text-primary;
+    color: $text-secondary;
+    margin-top: auto;
   }
 
   &__shiny {
@@ -368,14 +455,58 @@ watch(() => collectionStore.dailyStreak, () => {
     position: absolute;
     top: 4px;
     right: 4px;
-    font-size: 16px;
+    font-size: 18px;
     color: $gray-300;
-    transition: color $transition-base;
+    transition: all $transition-base;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: $radius-full;
+    @include flex-center;
+    background: rgba($white, 0.9);
 
-    &:hover,
+    &:hover {
+      color: $warning;
+      transform: scale(1.1);
+      background: $white;
+    }
+
     &.active {
       color: $warning;
+      animation: pulse 1s ease-in-out infinite;
     }
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
   }
 }
 </style>
