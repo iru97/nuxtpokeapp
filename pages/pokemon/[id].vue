@@ -1,44 +1,179 @@
 <script setup lang="ts">
-    const route = useRoute();
-    const pokemonId = route.params.id
-    const title = `Pokemon ${pokemonId}`
+import type { Pokemon, PokemonSpecies } from '~/types'
 
-    const nextPokemonId = computed(() => {
-        return (Number(pokemonId) + 1);
-    });
+const route = useRoute()
+const pokemonId = route.params.id as string
 
-    // Use useAsyncData for better SSR support and caching
-    const { data } = await useAsyncData(
-        `pokemon-${pokemonId}`,
-        () => $fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
-    );
+// Active tab state
+const activeTab = ref('stats')
 
-    // SEO Meta tags
-    useHead({
-        title: data.value ? `${data.value.name} - PokéApp` : `Pokémon ${pokemonId}`,
-        meta: [
-            { name: 'description', content: data.value ? `Información completa sobre ${data.value.name}, incluyendo estadísticas, tipos y habilidades.` : 'Información del Pokémon' },
-            { property: 'og:title', content: data.value ? `${data.value.name} - PokéApp` : `Pokémon ${pokemonId}` },
-            { property: 'og:description', content: data.value ? `Descubre ${data.value.name}, un Pokémon de tipo ${data.value.types.map((t: any) => t.type.name).join(', ')}` : 'Información del Pokémon' },
-            { property: 'og:image', content: data.value?.sprites?.other?.['official-artwork']?.front_default || '' },
-            { property: 'og:type', content: 'website' },
-            { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:title', content: data.value ? `${data.value.name} - PokéApp` : `Pokémon ${pokemonId}` },
-            { name: 'twitter:description', content: data.value ? `Stats y habilidades de ${data.value.name}` : 'Información del Pokémon' },
-            { name: 'twitter:image', content: data.value?.sprites?.other?.['official-artwork']?.front_default || '' }
-        ]
-    });
+// Fetch Pokemon data
+const { data: pokemon, error: pokemonError } = await useAsyncData<Pokemon>(
+  `pokemon-${pokemonId}`,
+  () => $fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
+)
+
+// Fetch Pokemon species data
+const { data: species, error: speciesError } = await useAsyncData<PokemonSpecies>(
+  `pokemon-species-${pokemonId}`,
+  async () => {
+    if (!pokemon.value) return null
+    return $fetch(pokemon.value.species.url)
+  }
+)
+
+// SEO Meta tags
+useHead({
+  title: pokemon.value ? `${pokemon.value.name} - Pokédex | PokéApp` : `Pokémon #${pokemonId}`,
+  meta: [
+    {
+      name: 'description',
+      content: pokemon.value
+        ? `Complete information about ${pokemon.value.name}, including stats, abilities, moves, and evolution chain. Types: ${pokemon.value.types.map(t => t.type.name).join(', ')}.`
+        : 'Pokemon information'
+    },
+    {
+      property: 'og:title',
+      content: pokemon.value ? `${pokemon.value.name} - Pokédex | PokéApp` : `Pokémon #${pokemonId}`
+    },
+    {
+      property: 'og:description',
+      content: pokemon.value
+        ? `Discover ${pokemon.value.name}, a ${pokemon.value.types.map(t => t.type.name).join('/')} type Pokémon with ${pokemon.value.stats.reduce((sum, s) => sum + s.base_stat, 0)} total base stats.`
+        : 'Pokemon information'
+    },
+    {
+      property: 'og:image',
+      content: pokemon.value?.sprites?.other?.['official-artwork']?.front_default || ''
+    },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    {
+      name: 'twitter:title',
+      content: pokemon.value ? `${pokemon.value.name} - Pokédex` : `Pokémon #${pokemonId}`
+    },
+    {
+      name: 'twitter:description',
+      content: pokemon.value
+        ? `Stats, abilities, and moves for ${pokemon.value.name}`
+        : 'Pokemon information'
+    },
+    {
+      name: 'twitter:image',
+      content: pokemon.value?.sprites?.other?.['official-artwork']?.front_default || ''
+    }
+  ]
+})
+
+// Shiny toggle state
+const showShiny = ref(false)
+
+const toggleShiny = () => {
+  showShiny.value = !showShiny.value
+}
+
+// Tab configuration
+const tabs = [
+  { id: 'stats', label: 'Stats', icon: 'mdi:chart-bar' },
+  { id: 'evolution', label: 'Evolution', icon: 'mdi:transit-connection-variant' },
+  { id: 'moves', label: 'Moves', icon: 'mdi:sword-cross' },
+  { id: 'abilities', label: 'Abilities', icon: 'mdi:shield-star' },
+  { id: 'sprites', label: 'Sprites', icon: 'mdi:image-multiple' },
+]
+
+// Evolution chain URL
+const evolutionChainUrl = computed(() => {
+  if (!species.value?.evolution_chain?.url) return undefined
+  return species.value.evolution_chain.url
+})
+
+// Track recently viewed
+const favoritesStore = useFavoritesStore()
+onMounted(() => {
+  if (pokemon.value) {
+    favoritesStore.addToRecentlyViewed(pokemon.value.id)
+  }
+})
 </script>
 
 <template>
-    <div class="px-12">
-        <h2>
-            {{ title  }}
-        </h2>
-        <v-card v-if="data"> {{ data.name }}</v-card>
-        <v-btn small color="primary">
-            <NuxtLink v-if="nextPokemonId" :to="'/pokemon/' + nextPokemonId">Pokemon {{ nextPokemonId }}</NuxtLink>
-        </v-btn>
+  <div class="pokemon-detail">
+    <!-- Error State -->
+    <div v-if="pokemonError" class="pokemon-detail__error">
+      <ErrorState
+        title="Pokémon Not Found"
+        :message="`Could not load Pokémon #${pokemonId}. It might not exist or there was a network error.`"
+        @retry="navigateTo('/pokemons')"
+      />
     </div>
-    
+
+    <!-- Loading State -->
+    <div v-else-if="!pokemon" class="pokemon-detail__loading">
+      <LoadingSpinner size="xl" message="Loading Pokémon details..." />
+    </div>
+
+    <!-- Detail Content -->
+    <div v-else class="pokemon-detail__container">
+      <!-- Header -->
+      <PokemonDetailHeader
+        :pokemon="pokemon"
+        :species="species"
+        :show-shiny="showShiny"
+        @toggle-shiny="toggleShiny"
+      />
+
+      <!-- Tabbed Content -->
+      <div class="pokemon-detail__content">
+        <Tabs v-model="activeTab" :tabs="tabs">
+          <!-- Stats Tab -->
+          <div v-if="activeTab === 'stats'">
+            <PokemonStats :pokemon="pokemon" />
+          </div>
+
+          <!-- Evolution Tab -->
+          <div v-if="activeTab === 'evolution'">
+            <PokemonEvolution :evolution-chain-url="evolutionChainUrl" />
+          </div>
+
+          <!-- Moves Tab -->
+          <div v-if="activeTab === 'moves'">
+            <PokemonMoves :pokemon="pokemon" />
+          </div>
+
+          <!-- Abilities Tab -->
+          <div v-if="activeTab === 'abilities'">
+            <PokemonAbilities :pokemon="pokemon" />
+          </div>
+
+          <!-- Sprites Tab -->
+          <div v-if="activeTab === 'sprites'">
+            <PokemonSprites :pokemon="pokemon" />
+          </div>
+        </Tabs>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped lang="scss">
+.pokemon-detail {
+  min-height: 100vh;
+  background: $bg-secondary;
+
+  &__error,
+  &__loading {
+    @include flex-center;
+    min-height: 80vh;
+    padding: $spacing-6;
+  }
+
+  &__container {
+    max-width: $container-2xl;
+    margin: 0 auto;
+  }
+
+  &__content {
+    padding: $spacing-6;
+  }
+}
+</style>
