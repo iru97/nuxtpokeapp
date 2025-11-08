@@ -21,11 +21,15 @@ onMounted(() => {
 const navLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
   { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
+  { to: '/generations', label: 'Generations', icon: 'mdi:earth' },
   { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
 ]
 
 const isActiveRoute = (path: string) => {
+  if (path === '/generations') {
+    return route.path.startsWith('/generations')
+  }
   return route.path === path
 }
 

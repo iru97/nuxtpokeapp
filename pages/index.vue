@@ -227,13 +227,20 @@ onMounted(async () => {
           <NuxtLink
             v-for="gen in GENERATIONS.slice(0, 6)"
             :key="gen.id"
-            :to="`/pokemons?generation=${gen.id}`"
+            :to="`/generations/${gen.id}`"
             class="generation-card"
           >
             <div class="generation-card__number">Gen {{ gen.id }}</div>
             <h3 class="generation-card__name">{{ gen.name }}</h3>
             <p class="generation-card__region">{{ gen.region }}</p>
             <p class="generation-card__range">#{{ gen.range[0] }} - #{{ gen.range[1] }}</p>
+          </NuxtLink>
+        </div>
+
+        <div class="generations__view-all">
+          <NuxtLink to="/generations" class="btn-view-all">
+            <span>View All Generations</span>
+            <Icon name="mdi:arrow-right" />
           </NuxtLink>
         </div>
       </div>
@@ -683,6 +690,40 @@ onMounted(async () => {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: $spacing-4;
+  }
+
+  &__view-all {
+    @include flex-center;
+    margin-top: $spacing-8;
+  }
+}
+
+.btn-view-all {
+  @include flex-center;
+  gap: $spacing-2;
+  padding: $spacing-4 $spacing-8;
+  background: $primary;
+  color: $white;
+  border-radius: $radius-full;
+  text-decoration: none;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  box-shadow: $shadow-md;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $primary-dark;
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+
+    svg {
+      transform: translateX(4px);
+    }
+  }
+
+  svg {
+    font-size: 24px;
+    transition: transform $transition-fast;
   }
 }
 
