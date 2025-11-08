@@ -24,6 +24,7 @@ const teamSize = ref(6)
 // Challenge
 const currentChallenge = ref<RandomChallenge | null>(null)
 const challengeTeam = ref<any[]>([])
+const loadingChallenge = ref(false)
 
 const generateSinglePokemon = async () => {
   loadingPokemon.value = true
@@ -53,11 +54,12 @@ const generateTeam = async () => {
 }
 
 const generateChallenge = async () => {
-  currentChallenge.value = generateRandomChallenge()
+  loadingChallenge.value = true
+  try {
+    currentChallenge.value = generateRandomChallenge()
 
-  // Generate a team for the challenge
-  if (currentChallenge.value.teamSize) {
-    try {
+    // Generate a team for the challenge
+    if (currentChallenge.value.teamSize) {
       const ids = generateRandomTeam(
         currentChallenge.value.teamSize,
         currentChallenge.value.filters
@@ -66,9 +68,11 @@ const generateChallenge = async () => {
         $fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).catch(() => null)
       )
       challengeTeam.value = (await Promise.all(pokemonPromises)).filter(Boolean)
-    } catch (err) {
-      console.error('Error generating challenge team:', err)
     }
+  } catch (err) {
+    console.error('Error generating challenge:', err)
+  } finally {
+    loadingChallenge.value = false
   }
 }
 
@@ -81,6 +85,72 @@ const copyTeamToClipboard = () => {
   alert('Team copied to clipboard!')
 }
 
+const generateMonotype = async () => {
+  loadingChallenge.value = true
+  try {
+    const type = generateMonotypeChallenge()
+    currentChallenge.value = {
+      type: 'Monotype',
+      description: `Use only ${type.toUpperCase()} type Pokémon throughout your entire playthrough!`,
+      rules: [
+        `All team members must be ${type} type`,
+        'Can only use Pokémon of this type from the start',
+        'Dual-types are allowed if one type matches'
+      ]
+    }
+    challengeTeam.value = []
+  } catch (err) {
+    console.error('Error generating monotype:', err)
+  } finally {
+    loadingChallenge.value = false
+  }
+}
+
+const generateNuzlocke = async () => {
+  loadingChallenge.value = true
+  try {
+    currentChallenge.value = {
+      type: 'Nuzlocke',
+      description: 'The classic hardcore Pokémon challenge with permadeath rules!',
+      rules: [
+        'If a Pokémon faints, it is considered "dead" and must be released or boxed forever',
+        'You may only catch the first Pokémon encountered in each area/route',
+        'You must nickname all your Pokémon (to create emotional bonds)',
+        'Optional: Battle style must be set to "Set" mode',
+        'Optional: No items in battle'
+      ]
+    }
+    challengeTeam.value = []
+  } catch (err) {
+    console.error('Error generating nuzlocke:', err)
+  } finally {
+    loadingChallenge.value = false
+  }
+}
+
+const generateGenerationRun = async () => {
+  loadingChallenge.value = true
+  try {
+    const gen = Math.floor(Math.random() * 9) + 1
+    const genNames = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea']
+
+    currentChallenge.value = {
+      type: `Generation ${gen}`,
+      description: `Complete your adventure using only Pokémon from the ${genNames[gen - 1]} region!`,
+      rules: [
+        `Only use Pokémon from Generation ${gen}`,
+        'No trading for Pokémon from other generations',
+        `Stick to the ${genNames[gen - 1]} Pokédex only`
+      ]
+    }
+    challengeTeam.value = []
+  } catch (err) {
+    console.error('Error generating generation run:', err)
+  } finally {
+    loadingChallenge.value = false
+  }
+}
+
 onMounted(() => {
   generateSinglePokemon()
 })
@@ -90,93 +160,123 @@ onMounted(() => {
   <div class="page random-page">
     <div class="container">
       <div class="page__header">
-        <h1 class="page__title">
-          <Icon name="mdi:dice-multiple" />
-          Random Generators
-        </h1>
+        <Icon name="mdi:dice-multiple" class="page__header-icon" />
+        <h1 class="page__title">Random Pokémon Generators</h1>
         <p class="page__description">
-          Generate random Pokemon, teams, and challenges for fun runs
+          Generate random Pokémon, build random teams, or create fun challenge runs!
+          Perfect for adding variety to your gameplay or starting a new challenge.
         </p>
       </div>
 
-      <div class="generators-grid">
-        <!-- Single Random Pokemon -->
-        <div class="generator-card">
-          <div class="generator-card__header">
+      <!-- Feature Cards -->
+      <div class="features-grid">
+        <!-- Single Pokemon Generator -->
+        <div class="feature-card feature-card--single">
+          <div class="feature-card__header">
             <Icon name="mdi:pokeball" />
-            <h2>Random Pokemon</h2>
+            <div>
+              <h2>Random Pokémon</h2>
+              <p class="feature-card__subtitle">Discover a random Pokémon from all 1000+ species</p>
+            </div>
           </div>
 
-          <div class="generator-card__content">
+          <div class="feature-card__content">
             <div v-if="loadingPokemon" class="loading">
               <LoadingSpinner size="lg" />
+              <p>Generating random Pokémon...</p>
             </div>
 
             <div v-else-if="randomPokemon" class="pokemon-result">
-              <NuxtImg
-                :src="randomPokemon.sprites.other['official-artwork']?.front_default"
-                :alt="randomPokemon.name"
-                width="200"
-                height="200"
-              />
-              <h3 class="pokemon-name">#{{ randomPokemon.id }} {{ randomPokemon.name }}</h3>
-              <div class="pokemon-types">
-                <TypeBadge
-                  v-for="t in randomPokemon.types"
-                  :key="t.type.name"
-                  :type="t.type.name"
+              <div class="pokemon-result__image-container">
+                <NuxtImg
+                  :src="randomPokemon.sprites.other['official-artwork']?.front_default || randomPokemon.sprites.front_default"
+                  :alt="randomPokemon.name"
+                  width="200"
+                  height="200"
+                  class="pokemon-result__image"
                 />
               </div>
-              <NuxtLink :to="`/pokemon/${randomPokemon.id}`" class="btn btn--secondary btn--sm">
-                View Details
+              <div class="pokemon-result__info">
+                <span class="pokemon-result__id">#{{ String(randomPokemon.id).padStart(3, '0') }}</span>
+                <h3 class="pokemon-result__name">{{ randomPokemon.name }}</h3>
+                <div class="pokemon-result__types">
+                  <TypeBadge
+                    v-for="t in randomPokemon.types"
+                    :key="t.type.name"
+                    :type="t.type.name"
+                  />
+                </div>
+              </div>
+              <NuxtLink :to="`/pokemon/${randomPokemon.id}`" class="btn btn--secondary">
+                <Icon name="mdi:eye" />
+                View Full Details
               </NuxtLink>
             </div>
           </div>
 
-          <button class="btn btn--primary btn--lg" @click="generateSinglePokemon">
+          <button class="btn btn--primary btn--lg btn--full" @click="generateSinglePokemon">
             <Icon name="mdi:refresh" />
-            Generate Random Pokemon
+            Generate Random Pokémon
           </button>
         </div>
 
-        <!-- Random Team -->
-        <div class="generator-card generator-card--wide">
-          <div class="generator-card__header">
+        <!-- Team Generator -->
+        <div class="feature-card feature-card--team">
+          <div class="feature-card__header">
             <Icon name="mdi:account-group" />
-            <h2>Random Team Generator</h2>
+            <div>
+              <h2>Random Team Builder</h2>
+              <p class="feature-card__subtitle">Create a random team of 1-6 Pokémon for your adventure</p>
+            </div>
           </div>
 
-          <div class="generator-card__controls">
-            <label>
-              Team Size: {{ teamSize }}
-              <input v-model.number="teamSize" type="range" min="1" max="6" />
+          <div class="feature-card__controls">
+            <label class="slider-control">
+              <span>Team Size: <strong>{{ teamSize }}</strong> Pokémon</span>
+              <input v-model.number="teamSize" type="range" min="1" max="6" class="slider" />
             </label>
           </div>
 
-          <div class="generator-card__content">
+          <div class="feature-card__content">
             <div v-if="loadingTeam" class="loading">
-              <LoadingSpinner size="lg" message="Generating team..." />
+              <LoadingSpinner size="lg" />
+              <p>Building your random team...</p>
             </div>
 
             <div v-else-if="randomTeam.length > 0" class="team-grid">
-              <div v-for="pokemon in randomTeam" :key="pokemon.id" class="team-member">
+              <div v-for="(pokemon, index) in randomTeam" :key="pokemon.id" class="team-member">
+                <span class="team-member__number">{{ index + 1 }}</span>
                 <NuxtImg
                   :src="pokemon.sprites.front_default"
                   :alt="pokemon.name"
                   width="96"
                   height="96"
+                  class="team-member__sprite"
                 />
                 <div class="team-member__info">
-                  <span class="team-member__id">#{{ pokemon.id }}</span>
+                  <span class="team-member__id">#{{ String(pokemon.id).padStart(3, '0') }}</span>
                   <span class="team-member__name">{{ pokemon.name }}</span>
+                  <div class="team-member__types">
+                    <TypeBadge
+                      v-for="t in pokemon.types"
+                      :key="t.type.name"
+                      :type="t.type.name"
+                      size="sm"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+
+            <div v-else class="empty-state">
+              <Icon name="mdi:help-circle-outline" />
+              <p>Click the button below to generate your random team!</p>
+            </div>
           </div>
 
-          <div class="generator-card__actions">
-            <button class="btn btn--primary" @click="generateTeam">
-              <Icon name="mdi:refresh" />
+          <div class="feature-card__actions">
+            <button class="btn btn--primary btn--lg" @click="generateTeam">
+              <Icon name="mdi:shuffle-variant" />
               Generate Team
             </button>
             <button
@@ -185,29 +285,93 @@ onMounted(() => {
               @click="copyTeamToClipboard"
             >
               <Icon name="mdi:content-copy" />
-              Copy Team
+              Copy to Clipboard
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Random Challenge -->
-        <div class="generator-card generator-card--challenge">
-          <div class="generator-card__header">
-            <Icon name="mdi:trophy" />
-            <h2>Random Challenge</h2>
+      <!-- Challenge Generator Section -->
+      <div class="challenge-section">
+        <div class="challenge-section__header">
+          <Icon name="mdi:trophy-variant" />
+          <div>
+            <h2>Challenge Run Generator</h2>
+            <p>Add difficulty and excitement to your playthrough with special rulesets!</p>
           </div>
+        </div>
 
-          <div class="generator-card__content">
-            <div v-if="currentChallenge" class="challenge-result">
+        <div class="challenge-types">
+          <button class="challenge-type-btn" @click="generateNuzlocke">
+            <Icon name="mdi:skull-crossbones" />
+            <div class="challenge-type-btn__content">
+              <strong>Nuzlocke</strong>
+              <span>Hardcore permadeath rules</span>
+            </div>
+          </button>
+
+          <button class="challenge-type-btn" @click="generateMonotype">
+            <Icon name="mdi:shape" />
+            <div class="challenge-type-btn__content">
+              <strong>Monotype</strong>
+              <span>Single type only</span>
+            </div>
+          </button>
+
+          <button class="challenge-type-btn" @click="generateGenerationRun">
+            <Icon name="mdi:earth" />
+            <div class="challenge-type-btn__content">
+              <strong>Generation Run</strong>
+              <span>One generation only</span>
+            </div>
+          </button>
+
+          <button class="challenge-type-btn" @click="generateChallenge">
+            <Icon name="mdi:dice-6" />
+            <div class="challenge-type-btn__content">
+              <strong>Random Challenge</strong>
+              <span>Surprise rules!</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Challenge Result -->
+        <Transition name="fade">
+          <div v-if="currentChallenge" class="challenge-result">
+            <div v-if="loadingChallenge" class="loading">
+              <LoadingSpinner size="lg" />
+              <p>Generating challenge...</p>
+            </div>
+
+            <div v-else class="challenge-result__content">
               <div class="challenge-badge">
-                <Icon name="mdi:star" />
+                <Icon name="mdi:star-four-points" />
                 {{ currentChallenge.type }}
               </div>
-              <h3 class="challenge-description">{{ currentChallenge.description }}</h3>
+
+              <h3 class="challenge-result__description">
+                {{ currentChallenge.description }}
+              </h3>
+
+              <div v-if="currentChallenge.rules" class="challenge-rules">
+                <h4>
+                  <Icon name="mdi:format-list-checks" />
+                  Challenge Rules:
+                </h4>
+                <ul>
+                  <li v-for="(rule, index) in currentChallenge.rules" :key="index">
+                    <Icon name="mdi:check-circle" />
+                    {{ rule }}
+                  </li>
+                </ul>
+              </div>
 
               <div v-if="challengeTeam.length > 0" class="challenge-team">
-                <h4>Suggested Team:</h4>
-                <div class="team-mini-grid">
+                <h4>
+                  <Icon name="mdi:account-group" />
+                  Suggested Starter Team:
+                </h4>
+                <div class="challenge-team__grid">
                   <div v-for="pokemon in challengeTeam" :key="pokemon.id" class="mini-pokemon">
                     <NuxtImg
                       :src="pokemon.sprites.front_default"
@@ -215,60 +379,18 @@ onMounted(() => {
                       width="64"
                       height="64"
                     />
-                    <span>{{ pokemon.name }}</span>
+                    <span class="mini-pokemon__name">{{ pokemon.name }}</span>
                   </div>
                 </div>
               </div>
+
+              <div class="challenge-result__tip">
+                <Icon name="mdi:lightbulb-on" />
+                <p><strong>Pro Tip:</strong> Screenshot this challenge and share it with friends, or use it as inspiration for your next playthrough!</p>
+              </div>
             </div>
           </div>
-
-          <button class="btn btn--primary btn--lg" @click="generateChallenge">
-            <Icon name="mdi:dice-6" />
-            Generate Challenge
-          </button>
-        </div>
-
-        <!-- Quick Generators -->
-        <div class="generator-card">
-          <div class="generator-card__header">
-            <Icon name="mdi:flash" />
-            <h2>Quick Generators</h2>
-          </div>
-
-          <div class="quick-generators">
-            <button class="quick-btn" @click="async () => {
-              const type = generateMonotypeChallenge()
-              currentChallenge = {
-                type: 'monotype',
-                description: `Monotype Challenge: Use only ${type.toUpperCase()} type Pokemon!`
-              }
-            }">
-              <Icon name="mdi:shape" />
-              Monotype Challenge
-            </button>
-
-            <button class="quick-btn" @click="() => {
-              const gen = Math.floor(Math.random() * 9) + 1
-              currentChallenge = {
-                type: 'generation',
-                description: `Generation ${gen} Only Challenge!`
-              }
-            }">
-              <Icon name="mdi:earth" />
-              Generation Challenge
-            </button>
-
-            <button class="quick-btn" @click="() => {
-              currentChallenge = {
-                type: 'nuzlocke',
-                description: 'Nuzlocke Challenge: Fainted = Dead, One per route!'
-              }
-            }">
-              <Icon name="mdi:skull" />
-              Nuzlocke Rules
-            </button>
-          </div>
-        </div>
+        </Transition>
       </div>
     </div>
   </div>
@@ -277,151 +399,261 @@ onMounted(() => {
 <style scoped lang="scss">
 .random-page {
   padding: $spacing-8 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, $bg-secondary 0%, $bg-primary 100%);
 }
 
-.generators-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: $spacing-6;
+.page__header {
+  text-align: center;
+  margin-bottom: $spacing-10;
 
-  @media (max-width: $breakpoint-sm) {
+  &-icon {
+    font-size: 72px;
+    color: $primary;
+    margin-bottom: $spacing-4;
+    animation: spin 3s linear infinite;
+  }
+
+  .page__description {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: $font-size-lg;
+    color: $text-secondary;
+    line-height: 1.6;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: $spacing-8;
+  margin-bottom: $spacing-12;
+
+  @media (max-width: $breakpoint-md) {
     grid-template-columns: 1fr;
   }
 }
 
-.generator-card {
+.feature-card {
   background: $white;
-  border-radius: $radius-xl;
+  border-radius: $radius-2xl;
   padding: $spacing-6;
-  box-shadow: $shadow-lg;
+  box-shadow: $shadow-xl;
   display: flex;
   flex-direction: column;
+  gap: $spacing-6;
 
-  @at-root .dark & {
-    background: $dark-surface;
+  &--single {
+    border-top: 4px solid $primary;
   }
 
-  &--wide {
-    grid-column: span 2;
-
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 1;
-    }
-  }
-
-  &--challenge {
-    grid-column: span 2;
-
-    @media (max-width: $breakpoint-lg) {
-      grid-column: span 1;
-    }
-
-    background: linear-gradient(135deg, rgba($primary, 0.1), rgba($secondary, 0.1));
+  &--team {
+    border-top: 4px solid $info;
   }
 
   &__header {
     display: flex;
-    align-items: center;
-    gap: $spacing-3;
-    margin-bottom: $spacing-4;
+    gap: $spacing-4;
+    align-items: start;
 
-    svg {
-      font-size: 32px;
+    > svg {
+      font-size: 48px;
       color: $primary;
+      flex-shrink: 0;
     }
 
     h2 {
       font-size: $font-size-2xl;
       font-weight: $font-weight-bold;
-      margin: 0;
-      color: $text-primary;
+      margin: 0 0 $spacing-1;
     }
   }
 
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin: 0;
+  }
+
   &__controls {
-    margin-bottom: $spacing-4;
-
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-2;
-      font-weight: $font-weight-semibold;
-
-      input[type="range"] {
-        width: 100%;
-      }
-    }
+    padding: $spacing-4;
+    background: $gray-50;
+    border-radius: $radius-lg;
   }
 
   &__content {
     flex: 1;
-    margin-bottom: $spacing-4;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__actions {
     display: flex;
     gap: $spacing-3;
     flex-wrap: wrap;
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+    }
+  }
+}
+
+.slider-control {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+
+  span {
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+
+    strong {
+      color: $primary;
+    }
+  }
+
+  .slider {
+    width: 100%;
+    cursor: pointer;
   }
 }
 
 .loading {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  min-height: 200px;
+  gap: $spacing-4;
+  color: $text-secondary;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-3;
+  color: $text-secondary;
+
+  svg {
+    font-size: 64px;
+    opacity: 0.3;
+  }
+
+  p {
+    text-align: center;
+    font-size: $font-size-lg;
+  }
 }
 
 .pokemon-result {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-3;
+  gap: $spacing-4;
+  width: 100%;
 
-  img {
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  &__image-container {
+    position: relative;
+    padding: $spacing-4;
+    background: radial-gradient(circle, rgba($primary, 0.1) 0%, transparent 70%);
+    border-radius: $radius-full;
+  }
+
+  &__image {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  &__info {
+    text-align: center;
+  }
+
+  &__id {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    font-family: $font-family-mono;
+  }
+
+  &__name {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    text-transform: capitalize;
+    margin: $spacing-2 0;
+    color: $text-primary;
+  }
+
+  &__types {
+    display: flex;
+    gap: $spacing-2;
+    justify-content: center;
   }
 }
 
-.pokemon-name {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  text-transform: capitalize;
-  color: $text-primary;
-  text-align: center;
-}
-
-.pokemon-types {
-  display: flex;
-  gap: $spacing-2;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: $spacing-4;
+  width: 100%;
 }
 
 .team-member {
+  position: relative;
   background: $gray-50;
   border-radius: $radius-lg;
-  padding: $spacing-3;
+  padding: $spacing-4;
   text-align: center;
-  transition: transform $transition-base;
-
-  @at-root .dark & {
-    background: rgba(255, 255, 255, 0.05);
-  }
+  transition: all $transition-base;
+  border: 2px solid transparent;
 
   &:hover {
     transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+    border-color: $primary;
+  }
+
+  &__number {
+    position: absolute;
+    top: $spacing-2;
+    left: $spacing-2;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $primary;
+    color: $white;
+    font-weight: $font-weight-bold;
+    border-radius: $radius-full;
+    font-size: $font-size-sm;
+  }
+
+  &__sprite {
+    margin-bottom: $spacing-2;
   }
 
   &__info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-top: $spacing-2;
+    gap: $spacing-1;
   }
 
   &__id {
@@ -431,107 +663,276 @@ onMounted(() => {
   }
 
   &__name {
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-bold;
     text-transform: capitalize;
     color: $text-primary;
+  }
+
+  &__types {
+    display: flex;
+    gap: $spacing-1;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+.challenge-section {
+  background: $white;
+  border-radius: $radius-2xl;
+  padding: $spacing-8;
+  box-shadow: $shadow-2xl;
+  border-top: 4px solid $accent;
+
+  &__header {
+    display: flex;
+    gap: $spacing-4;
+    align-items: start;
+    margin-bottom: $spacing-8;
+
+    > svg {
+      font-size: 56px;
+      color: $accent;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      margin: 0 0 $spacing-2;
+    }
+
+    p {
+      font-size: $font-size-lg;
+      color: $text-secondary;
+      margin: 0;
+    }
+  }
+}
+
+.challenge-types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-4;
+  margin-bottom: $spacing-8;
+}
+
+.challenge-type-btn {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  background: $gray-50;
+  border: 2px solid $gray-200;
+  border-radius: $radius-xl;
+  transition: all $transition-base;
+  cursor: pointer;
+
+  &:hover {
+    background: $primary;
+    border-color: $primary;
+    color: $white;
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+
+    svg {
+      color: $white;
+    }
+
+    .challenge-type-btn__content span {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  > svg {
+    font-size: 32px;
+    color: $primary;
+    transition: color $transition-base;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 4px;
+
+    strong {
+      font-size: $font-size-base;
+    }
+
+    span {
+      font-size: $font-size-sm;
+      color: $text-secondary;
+      transition: color $transition-base;
+    }
   }
 }
 
 .challenge-result {
-  text-align: center;
+  background: linear-gradient(135deg, rgba($accent, 0.1), rgba($primary, 0.1));
+  border-radius: $radius-xl;
+  padding: $spacing-6;
+  border: 2px dashed $accent;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-6;
+  }
+
+  &__description {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    text-align: center;
+    color: $text-primary;
+    line-height: 1.4;
+  }
+
+  &__tip {
+    display: flex;
+    gap: $spacing-3;
+    padding: $spacing-4;
+    background: rgba($info, 0.1);
+    border-left: 4px solid $info;
+    border-radius: $radius-md;
+
+    svg {
+      font-size: 24px;
+      color: $info;
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
+      color: $text-primary;
+    }
+  }
 }
 
 .challenge-badge {
   display: inline-flex;
   align-items: center;
   gap: $spacing-2;
-  padding: $spacing-2 $spacing-4;
-  background: $primary;
-  color: $white;
+  padding: $spacing-2 $spacing-5;
+  background: $accent;
+  color: $accent-dark;
   border-radius: $radius-full;
   font-weight: $font-weight-bold;
+  font-size: $font-size-lg;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: $spacing-4;
+  letter-spacing: 1px;
+  align-self: center;
+  box-shadow: $shadow-md;
 
   svg {
-    font-size: 20px;
+    font-size: 24px;
   }
 }
 
-.challenge-description {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: $spacing-6;
+.challenge-rules {
+  background: $white;
+  padding: $spacing-5;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-xl;
+    margin-bottom: $spacing-4;
+
+    svg {
+      font-size: 24px;
+      color: $primary;
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  li {
+    display: flex;
+    align-items: start;
+    gap: $spacing-2;
+    font-size: $font-size-base;
+    line-height: 1.6;
+
+    svg {
+      font-size: 20px;
+      color: $success;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  }
 }
 
 .challenge-team {
-  margin-top: $spacing-6;
+  background: $white;
+  padding: $spacing-5;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
 
   h4 {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-xl;
     margin-bottom: $spacing-4;
-  }
-}
 
-.team-mini-grid {
-  display: flex;
-  justify-content: center;
-  gap: $spacing-3;
-  flex-wrap: wrap;
+    svg {
+      font-size: 24px;
+      color: $primary;
+    }
+  }
+
+  &__grid {
+    display: flex;
+    gap: $spacing-4;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 .mini-pokemon {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-1;
+  gap: $spacing-2;
+  padding: $spacing-3;
+  background: $gray-50;
+  border-radius: $radius-lg;
+  transition: all $transition-base;
 
-  span {
+  &:hover {
+    transform: scale(1.05);
+    background: $gray-100;
+  }
+
+  &__name {
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     text-transform: capitalize;
   }
 }
 
-.quick-generators {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-3;
+.btn--full {
+  width: 100%;
 }
 
-.quick-btn {
-  @include reset-button;
-  @include spring-bounce;
-  @include accessible-focus;
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-3;
-  background: $gray-100;
-  border-radius: $radius-lg;
-  font-weight: $font-weight-semibold;
-  text-align: left;
-  transition: all $transition-base;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-out;
+}
 
-  @at-root .dark & {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  svg {
-    font-size: 24px;
-    color: $primary;
-  }
-
-  &:hover {
-    background: $primary;
-    color: $white;
-
-    svg {
-      color: $white;
-    }
-  }
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
