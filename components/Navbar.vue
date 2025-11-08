@@ -6,14 +6,22 @@ const router = useRouter()
 const route = useRoute()
 
 const favoritesStore = useFavoritesStore()
+const comparisonStore = useComparisonStore()
 const filtersStore = useFiltersStore()
 
 const favoritesCount = computed(() => favoritesStore.favorites.length)
+const comparisonCount = computed(() => comparisonStore.count)
+
+// Initialize comparison store
+onMounted(() => {
+  comparisonStore.init()
+})
 
 // Navigation links
 const navLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
   { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
+  { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
 ]
 

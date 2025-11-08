@@ -12,11 +12,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const favoritesStore = useFavoritesStore()
+const comparisonStore = useComparisonStore()
 const router = useRouter()
 
 const isFavorite = computed(() => {
   if (!props.pokemon) return false
   return favoritesStore.isFavorite(props.pokemon.id)
+})
+
+const isInComparison = computed(() => {
+  if (!props.pokemon) return false
+  return comparisonStore.isSelected(props.pokemon.id)
 })
 
 const primaryType = computed(() => {
@@ -37,6 +43,17 @@ const toggleFavorite = (event: Event) => {
   event.stopPropagation()
   if (props.pokemon) {
     favoritesStore.toggleFavorite(props.pokemon.id)
+  }
+}
+
+const toggleComparison = (event: Event) => {
+  event.stopPropagation()
+  if (props.pokemon) {
+    const success = comparisonStore.togglePokemon(props.pokemon.id, props.pokemon.name)
+    if (!success && !comparisonStore.isSelected(props.pokemon.id)) {
+      // Comparison is full
+      alert('Comparison is full. Maximum 3 Pokémon allowed.')
+    }
   }
 }
 
@@ -81,13 +98,24 @@ const goToDetail = () => {
   >
     <div class="pokemon-card__header">
       <span class="pokemon-card__id">#{{ String(pokemon.id).padStart(3, '0') }}</span>
-      <button
-        class="pokemon-card__favorite"
-        :class="{ 'pokemon-card__favorite--active': isFavorite }"
-        @click="toggleFavorite"
-      >
-        <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
-      </button>
+      <div class="pokemon-card__actions">
+        <button
+          class="pokemon-card__action"
+          :class="{ 'pokemon-card__action--active': isInComparison }"
+          @click="toggleComparison"
+          title="Add to comparison"
+        >
+          <Icon :name="isInComparison ? 'mdi:compare' : 'mdi:compare'" />
+        </button>
+        <button
+          class="pokemon-card__action pokemon-card__favorite"
+          :class="{ 'pokemon-card__action--active': isFavorite }"
+          @click="toggleFavorite"
+          title="Add to favorites"
+        >
+          <Icon :name="isFavorite ? 'mdi:heart' : 'mdi:heart-outline'" />
+        </button>
+      </div>
     </div>
 
     <div class="pokemon-card__image">
@@ -211,7 +239,12 @@ const goToDetail = () => {
     font-family: $font-family-mono;
   }
 
-  &__favorite {
+  &__actions {
+    display: flex;
+    gap: $spacing-2;
+  }
+
+  &__action {
     @include reset-button;
     @include flex-center;
     width: 32px;
@@ -223,11 +256,24 @@ const goToDetail = () => {
 
     &:hover {
       background-color: $gray-200;
-      color: $error;
       transform: scale(1.1);
     }
 
     &--active {
+      background-color: rgba($primary, 0.1);
+
+      &:hover {
+        background-color: rgba($primary, 0.2);
+      }
+    }
+  }
+
+  &__favorite {
+    &:hover {
+      color: $error;
+    }
+
+    &.pokemon-card__action--active {
       color: $error;
       background-color: rgba($error, 0.1);
 
