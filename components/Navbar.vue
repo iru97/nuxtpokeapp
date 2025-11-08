@@ -22,21 +22,55 @@ onMounted(() => {
   initDarkMode()
 })
 
-// Navigation links
-const navLinks = [
+// Simple navigation links (no dropdown)
+const simpleLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
-  { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
-  { to: '/advanced-search', label: 'Search', icon: 'mdi:filter-cog' },
-  { to: '/generations', label: 'Generations', icon: 'mdi:earth' },
-  { to: '/team-builder', label: 'Team', icon: 'mdi:account-group', badge: teamCount },
-  { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
-  { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
-  { to: '/collection/checklist', label: 'Checklist', icon: 'mdi:checkbox-marked-circle-outline' },
-  { to: '/tools/damage-calculator', label: 'Damage Calc', icon: 'mdi:calculator' },
-  { to: '/tools/random-generators', label: 'Random', icon: 'mdi:dice-multiple' },
-  { to: '/moves', label: 'Moves', icon: 'mdi:sword-cross' },
-  { to: '/abilities', label: 'Abilities', icon: 'mdi:shield-star' },
-  { to: '/stats', label: 'Stats', icon: 'mdi:chart-box-outline' },
+]
+
+// Dropdown navigation groups
+const dropdownGroups = [
+  {
+    label: 'Pokédex',
+    icon: 'mdi:pokeball',
+    items: [
+      { to: '/pokemons', label: 'Browse All', icon: 'mdi:view-grid' },
+      { to: '/generations', label: 'By Generation', icon: 'mdi:earth' },
+      { to: '/advanced-search', label: 'Advanced Search', icon: 'mdi:filter-cog' },
+      { to: '/stats', label: 'Stats & Rankings', icon: 'mdi:chart-box-outline' },
+    ]
+  },
+  {
+    label: 'Tools',
+    icon: 'mdi:tools',
+    items: [
+      { to: '/team-builder', label: 'Team Builder', icon: 'mdi:account-group', badge: teamCount },
+      { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
+      { to: '/tools/damage-calculator', label: 'Damage Calculator', icon: 'mdi:calculator' },
+      { to: '/tools/random-generators', label: 'Randomizer', icon: 'mdi:dice-multiple' },
+    ]
+  },
+  {
+    label: 'Database',
+    icon: 'mdi:database',
+    items: [
+      { to: '/moves', label: 'Moves', icon: 'mdi:sword-cross' },
+      { to: '/abilities', label: 'Abilities', icon: 'mdi:shield-star' },
+    ]
+  },
+  {
+    label: 'Collection',
+    icon: 'mdi:folder-heart',
+    items: [
+      { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
+      { to: '/collection/checklist', label: 'Checklist', icon: 'mdi:checkbox-marked-circle-outline' },
+    ]
+  },
+]
+
+// All links flattened for mobile menu
+const allLinks = [
+  ...simpleLinks,
+  ...dropdownGroups.flatMap(group => group.items)
 ]
 
 const isActiveRoute = (path: string) => {
@@ -106,23 +140,29 @@ onMounted(() => {
       </NuxtLink>
 
       <!-- Desktop Navigation -->
-      <ul class="navbar__nav" role="menubar">
-        <li v-for="link in navLinks" :key="link.to" role="none">
-          <NuxtLink
-            :to="link.to"
-            class="navbar__link"
-            :class="{ 'navbar__link--active': isActiveRoute(link.to) }"
-            role="menuitem"
-            :aria-current="isActiveRoute(link.to) ? 'page' : undefined"
-          >
-            <Icon :name="link.icon" aria-hidden="true" />
-            <span>{{ link.label }}</span>
-            <span v-if="link.badge && link.badge.value > 0" class="navbar__badge" :aria-label="`${link.badge.value} items`">
-              {{ link.badge.value }}
-            </span>
-          </NuxtLink>
-        </li>
-      </ul>
+      <div class="navbar__nav">
+        <!-- Simple Links -->
+        <NuxtLink
+          v-for="link in simpleLinks"
+          :key="link.to"
+          :to="link.to"
+          class="navbar__link"
+          :class="{ 'navbar__link--active': isActiveRoute(link.to) }"
+          :aria-current="isActiveRoute(link.to) ? 'page' : undefined"
+        >
+          <Icon :name="link.icon" aria-hidden="true" />
+          <span>{{ link.label }}</span>
+        </NuxtLink>
+
+        <!-- Dropdown Groups -->
+        <NavbarDropdown
+          v-for="group in dropdownGroups"
+          :key="group.label"
+          :label="group.label"
+          :icon="group.icon"
+          :items="group.items"
+        />
+      </div>
 
       <!-- Actions -->
       <div class="navbar__actions">
@@ -162,24 +202,44 @@ onMounted(() => {
     <!-- Mobile Menu -->
     <Transition name="slide-down">
       <div v-if="showMobileMenu" id="mobile-menu" class="navbar__mobile-menu" role="menu">
-        <ul class="navbar__mobile-nav">
-          <li v-for="link in navLinks" :key="link.to" role="none">
-            <NuxtLink
-              :to="link.to"
-              class="navbar__mobile-link"
-              :class="{ 'navbar__mobile-link--active': isActiveRoute(link.to) }"
-              role="menuitem"
-              :aria-current="isActiveRoute(link.to) ? 'page' : undefined"
-              @click="closeMobileMenu"
-            >
-              <Icon :name="link.icon" aria-hidden="true" />
-              <span>{{ link.label }}</span>
-              <span v-if="link.badge && link.badge.value > 0" class="navbar__badge" :aria-label="`${link.badge.value} items`">
-                {{ link.badge.value }}
-              </span>
-            </NuxtLink>
-          </li>
-        </ul>
+        <div class="navbar__mobile-nav">
+          <!-- Home Link -->
+          <NuxtLink
+            v-for="link in simpleLinks"
+            :key="link.to"
+            :to="link.to"
+            class="navbar__mobile-link"
+            :class="{ 'navbar__mobile-link--active': isActiveRoute(link.to) }"
+            @click="closeMobileMenu"
+          >
+            <Icon :name="link.icon" aria-hidden="true" />
+            <span>{{ link.label }}</span>
+          </NuxtLink>
+
+          <!-- Grouped Sections -->
+          <div v-for="group in dropdownGroups" :key="group.label" class="navbar__mobile-group">
+            <div class="navbar__mobile-group-header">
+              <Icon :name="group.icon" aria-hidden="true" />
+              <span>{{ group.label }}</span>
+            </div>
+            <div class="navbar__mobile-group-items">
+              <NuxtLink
+                v-for="item in group.items"
+                :key="item.to"
+                :to="item.to"
+                class="navbar__mobile-link navbar__mobile-link--sub"
+                :class="{ 'navbar__mobile-link--active': isActiveRoute(item.to) }"
+                @click="closeMobileMenu"
+              >
+                <Icon :name="item.icon" aria-hidden="true" />
+                <span>{{ item.label }}</span>
+                <span v-if="item.badge && item.badge.value > 0" class="navbar__badge" :aria-label="`${item.badge.value} items`">
+                  {{ item.badge.value }}
+                </span>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
       </div>
     </Transition>
 
@@ -278,12 +338,9 @@ onMounted(() => {
 
   &__nav {
     display: none;
-    list-style: none;
-    margin: 0;
-    padding: 0;
     gap: $spacing-2;
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-lg) {
       @include flex-center;
     }
   }
@@ -394,7 +451,7 @@ onMounted(() => {
       font-size: 24px;
     }
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-lg) {
       display: none;
     }
   }
@@ -403,20 +460,49 @@ onMounted(() => {
     background: darken($primary, 5%);
     border-top: 1px solid rgba($white, 0.1);
     box-shadow: $shadow-lg;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-lg) {
       display: none;
     }
   }
 
   &__mobile-nav {
-    list-style: none;
-    margin: 0;
     padding: $spacing-4;
+    @include flex-column;
+    gap: $spacing-2;
+  }
+
+  &__mobile-group {
+    @include flex-column;
+    gap: $spacing-1;
+    margin-top: $spacing-3;
+
+    &-header {
+      @include flex-center;
+      gap: $spacing-2;
+      padding: $spacing-2 $spacing-4;
+      color: rgba($white, 0.6);
+      font-size: $font-size-xs;
+      font-weight: $font-weight-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+
+      svg {
+        font-size: 16px;
+      }
+    }
+
+    &-items {
+      @include flex-column;
+      gap: $spacing-1;
+    }
   }
 
   &__mobile-link {
-    @include flex-between;
+    @include flex-center;
+    gap: $spacing-3;
     padding: $spacing-3 $spacing-4;
     color: rgba($white, 0.9);
     font-weight: $font-weight-medium;
@@ -434,8 +520,18 @@ onMounted(() => {
       color: $white;
     }
 
+    &--sub {
+      padding-left: $spacing-8;
+      font-size: $font-size-sm;
+    }
+
     svg {
       font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    span:nth-child(2) {
+      flex: 1;
     }
   }
 }

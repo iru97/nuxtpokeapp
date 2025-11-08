@@ -293,12 +293,12 @@ onMounted(async () => {
 .hero {
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
   color: $white;
-  padding: $spacing-20 0;
+  padding: $spacing-8 0;
   position: relative;
   overflow: hidden;
 
   @media (max-width: $breakpoint-md) {
-    padding: $spacing-12 0;
+    padding: $spacing-6 0;
   }
 
   // Parallax background
@@ -419,7 +419,7 @@ onMounted(async () => {
 
 // Stats Section
 .stats {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
   background: $bg-secondary;
 
   &__container {
@@ -472,7 +472,7 @@ onMounted(async () => {
 
 // Quick Links
 .quick-links {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
 
   &__container {
     max-width: $container-2xl;
@@ -543,7 +543,7 @@ onMounted(async () => {
 
 // Pokemon of the Day
 .potd {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
   background: $bg-secondary;
 
   &__container {
@@ -681,7 +681,7 @@ onMounted(async () => {
 
 // Featured
 .featured {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
 
   &__container {
     max-width: $container-2xl;
@@ -739,7 +739,7 @@ onMounted(async () => {
 
 // Generations
 .generations {
-  padding: $spacing-12 0;
+  padding: $spacing-8 0;
   background: $bg-secondary;
 
   &__container {
