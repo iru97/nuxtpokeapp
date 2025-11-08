@@ -16,6 +16,20 @@ const comparisonStore = useComparisonStore()
 const teamStore = useTeamStore()
 const router = useRouter()
 
+// 3D Tilt Effect
+const {
+  cardRef,
+  transformStyle,
+  glareStyle,
+  handleMouseMove,
+  handleMouseEnter,
+  handleMouseLeave
+} = use3DTilt({
+  maxTilt: 8,
+  scale: 1.03,
+  speed: 300
+})
+
 const isFavorite = computed(() => {
   if (!props.pokemon) return false
   return favoritesStore.isFavorite(props.pokemon.id)
@@ -116,9 +130,13 @@ const goToDetail = () => {
 
   <div
     v-else-if="pokemon"
-    class="pokemon-card"
-    :style="{ '--type-color': typeColor }"
+    ref="cardRef"
+    class="pokemon-card pokemon-card--3d"
+    :style="{ '--type-color': typeColor, ...transformStyle }"
     @click="goToDetail"
+    @mousemove="handleMouseMove"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
     role="article"
     :aria-label="`${pokemon.name} Pokemon card`"
   >
@@ -213,6 +231,7 @@ const goToDetail = () => {
       </div>
     </div>
 
+    <div class="pokemon-card__glare" :style="glareStyle" />
     <div class="pokemon-card__shine" />
   </div>
 </template>
@@ -228,6 +247,11 @@ const goToDetail = () => {
   transition: all $transition-base;
   overflow: hidden;
   border: 2px solid transparent;
+
+  // 3D Effect Support
+  &--3d {
+    transform-style: preserve-3d;
+  }
 
   &::before {
     content: '';
@@ -478,6 +502,19 @@ const goToDetail = () => {
     );
     transition: left $transition-slow;
     pointer-events: none;
+  }
+
+  &__glare {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: $radius-xl;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
+    transition: opacity 0.3s ease;
   }
 }
 
