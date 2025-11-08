@@ -32,10 +32,45 @@ A comprehensive, modern Pokémon application built with **Nuxt 3**, **TypeScript
 
 ### 📱 **User Experience**
 - **Responsive Design** - Mobile-first approach, works on all devices
-- **Dark Mode Ready** - Design system prepared for theme switching
+- **Dark Mode** - Complete dark/light theme system with toggle and system preference detection
 - **SSR & SEO** - Server-side rendering with optimized meta tags
 - **Persistent State** - LocalStorage for favorites, teams, and comparisons
-- **Loading States** - Skeleton loaders and smooth transitions
+- **Loading States** - Enhanced skeleton loaders with shimmer effects
+- **Scroll Animations** - Smooth fade-in animations on scroll
+- **3D Card Effects** - Realistic tilt effects on Pokemon cards
+- **Parallax Backgrounds** - Subtle depth effects on hero sections
+- **Accessibility** - WCAG AA compliant with full keyboard navigation and screen reader support
+- **Reduced Motion** - Respects user motion preferences for accessibility
+
+---
+
+## 🎨 **Modern Design System**
+
+### Design Features (2024-2025)
+- **✅ Glassmorphism** - Frosted glass effects on cards and modals
+- **✅ Bento Grid Layouts** - Modern asymmetric grid for featured content
+- **✅ Fluid Typography** - Responsive font sizing across all screen sizes
+- **✅ 3D Interactions** - Card tilt effects mimicking physical Pokemon cards
+- **✅ Micro-interactions** - Spring-bounce animations with tactile feedback
+- **✅ Scroll Animations** - Intersection Observer-based reveal animations
+- **✅ Parallax Effects** - Depth perception with scroll-based movement
+- **✅ Dark Mode** - System-aware theme with localStorage persistence
+
+### Accessibility Features
+- **WCAG AA Compliant** - Proper contrast ratios and focus indicators
+- **ARIA Labels** - Complete semantic markup for screen readers
+- **Keyboard Navigation** - Full app navigation without mouse
+- **Reduced Motion** - Respects `prefers-reduced-motion` media query
+- **Focus Management** - Visible focus states on all interactive elements
+- **Screen Reader Support** - Descriptive labels and roles throughout
+
+### Performance Optimizations
+- **Passive Scroll Listeners** - Better scroll performance
+- **GPU-Accelerated Transforms** - Smooth 3D animations
+- **Intersection Observer** - Efficient scroll-triggered animations
+- **Once-Only Animations** - Trigger animations only once for better performance
+- **Image Optimization** - Lazy loading with NuxtImg
+- **Code Splitting** - Dynamic imports for optimal bundle size
 
 ---
 
@@ -91,8 +126,12 @@ nuxtpokeapp/
 │   ├── Navbar.vue           # Main navigation
 │   └── ...
 ├── composables/
-│   └── api/
-│       └── usePokemonApi.ts # PokeAPI integration
+│   ├── api/
+│   │   └── usePokemonApi.ts # PokeAPI integration
+│   ├── useDarkMode.ts       # Dark mode management
+│   ├── use3DTilt.ts         # 3D card tilt effects
+│   ├── useScrollAnimation.ts # Scroll-triggered animations
+│   └── useParallax.ts       # Parallax scroll effects
 ├── constants/
 │   └── pokemon.ts           # Pokemon constants & type data
 ├── layouts/
@@ -438,6 +477,164 @@ Evolution chain display:
 - **ComparisonTypes**: Type effectiveness matrix
 - **ComparisonAbilities**: Abilities comparison
 - **ComparisonMoves**: Movesets comparison
+
+---
+
+## 🎯 Modern Composables (Modernization Features)
+
+### useDarkMode
+Complete dark mode management with system preference detection.
+
+```typescript
+const { isDark, toggleDark, initDarkMode } = useDarkMode()
+
+// Usage
+onMounted(() => {
+  initDarkMode() // Initialize on app mount
+})
+
+// Toggle dark mode
+<button @click="toggleDark">
+  <Icon :name="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'" />
+</button>
+```
+
+**Features:**
+- System preference detection (`prefers-color-scheme`)
+- LocalStorage persistence
+- Automatic theme changes listener
+- Manual toggle support
+
+### use3DTilt
+Realistic 3D tilt effect for cards (mimics physical Pokemon cards).
+
+```vue
+<script setup>
+const {
+  cardRef,
+  transformStyle,
+  glareStyle,
+  handleMouseMove,
+  handleMouseEnter,
+  handleMouseLeave
+} = use3DTilt({
+  maxTilt: 8,      // Max tilt angle in degrees
+  scale: 1.03,     // Scale on hover
+  speed: 300       // Transition speed in ms
+})
+</script>
+
+<template>
+  <div
+    ref="cardRef"
+    :style="transformStyle"
+    @mousemove="handleMouseMove"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
+    <div class="glare" :style="glareStyle" />
+    <!-- Card content -->
+  </div>
+</template>
+```
+
+**Features:**
+- Real-time perspective calculations
+- Holographic glare effect
+- Automatic reduced motion support
+- Configurable parameters
+
+### useScrollAnimation
+Trigger animations when elements scroll into view.
+
+```vue
+<script setup>
+const { elementRef, isVisible } = useScrollAnimation({
+  threshold: 0.2,  // % of element visible before trigger
+  once: true       // Trigger only once
+})
+</script>
+
+<template>
+  <section
+    ref="elementRef"
+    class="scroll-fade"
+    :class="{ 'is-visible': isVisible }"
+  >
+    <!-- Content -->
+  </section>
+</template>
+
+<style>
+.scroll-fade {
+  @include scroll-fade-in; // From mixins.scss
+}
+</style>
+```
+
+**Features:**
+- Intersection Observer API
+- Configurable threshold
+- Once-only or repeating animations
+- Reduced motion safe
+
+### useParallax
+Create depth with scroll-based parallax effects.
+
+```vue
+<script setup>
+const { parallaxStyle } = useParallax({
+  speed: 0.5,         // Parallax speed (0.5 = half scroll speed)
+  direction: 'vertical' // 'vertical' or 'horizontal'
+})
+</script>
+
+<template>
+  <div class="background" :style="parallaxStyle">
+    <!-- Background content -->
+  </div>
+</template>
+```
+
+**Features:**
+- Passive scroll listeners
+- Configurable speed and direction
+- GPU-accelerated transforms
+- Automatic reduced motion support
+
+### SCSS Mixins (Modernization)
+
+```scss
+// Accessible focus (WCAG AA)
+@include accessible-focus($primary, 2px, 3px);
+
+// Reduced motion safe
+@include reduced-motion-safe;
+
+// Spring bounce (buttons)
+@include spring-bounce;
+
+// Skeleton shimmer (loading)
+@include skeleton-shimmer;
+
+// Fluid typography
+@include fluid-type(2.5rem, 4.5rem);
+
+// Bento grid layout
+@include bento-grid(4, $spacing-4, 200px);
+
+// Scroll fade in
+@include scroll-fade-in(0s);
+
+// 3D card tilt
+@include card-3d-tilt;
+
+// Modern button with ripple
+@include button-modern;
+
+// Glassmorphism
+@include glass-morphism(0.9, 10px);
+```
 
 ---
 
