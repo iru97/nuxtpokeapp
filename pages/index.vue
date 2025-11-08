@@ -569,9 +569,10 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--link-color), 0.1);
+    background: color-mix(in srgb, var(--link-color) 10%, transparent);
     border-radius: $radius-lg;
     transition: all $transition-base;
+    pointer-events: none;
   }
 
   &__icon {

@@ -48,9 +48,7 @@ const handleMouseEnter = () => {
   if (hoverTimeout) {
     clearTimeout(hoverTimeout)
   }
-  hoverTimeout = setTimeout(() => {
-    openDropdown()
-  }, 200)
+  openDropdown()
 }
 
 const handleMouseLeave = () => {
@@ -59,7 +57,7 @@ const handleMouseLeave = () => {
   }
   hoverTimeout = setTimeout(() => {
     closeDropdown()
-  }, 300)
+  }, 800)
 }
 
 // Handle click (mobile/desktop toggle)
@@ -69,11 +67,27 @@ const handleClick = () => {
 
 // Handle click outside
 const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement
+
+  // Check if click is on ANY link (NuxtLink, anchor tag, or their children)
+  const isLink = target.closest('a[href]')
+
+  // If clicking any link anywhere, cancel any pending close timeout and let it navigate
+  // The route watcher will close the dropdown after navigation completes
+  if (isLink) {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+      hoverTimeout = null
+    }
+    return
+  }
+
+  // Only close dropdown if clicking outside of it and not on a link
   if (
     dropdownRef.value &&
     triggerRef.value &&
-    !dropdownRef.value.contains(event.target as Node) &&
-    !triggerRef.value.contains(event.target as Node)
+    !dropdownRef.value.contains(target) &&
+    !triggerRef.value.contains(target)
   ) {
     closeDropdown()
   }
@@ -107,17 +121,15 @@ watch(() => route.path, () => {
 </script>
 
 <template>
-  <div
-    class="navbar-dropdown"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="navbar-dropdown">
     <button
       ref="triggerRef"
       class="navbar-dropdown__trigger"
       :class="{ 'navbar-dropdown__trigger--active': hasActiveItem || isOpen }"
       :aria-expanded="isOpen"
       :aria-haspopup="true"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
       @click="handleClick"
     >
       <Icon :name="icon" aria-hidden="true" />
@@ -137,6 +149,8 @@ watch(() => route.path, () => {
         class="navbar-dropdown__menu"
         role="menu"
         :aria-label="`${label} menu`"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
       >
         <NuxtLink
           v-for="item in items"
@@ -145,7 +159,6 @@ watch(() => route.path, () => {
           class="navbar-dropdown__item"
           :class="{ 'navbar-dropdown__item--active': route.path === item.to || (item.to === '/generations' && route.path.startsWith('/generations')) }"
           role="menuitem"
-          @click="closeDropdown"
         >
           <Icon :name="item.icon" aria-hidden="true" />
           <span>{{ item.label }}</span>

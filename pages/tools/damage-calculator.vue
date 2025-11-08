@@ -123,6 +123,16 @@ const selectDefender = async (id: number) => {
   }
 }
 
+// Select move for attacker
+const selectMove = async (moveName: string) => {
+  try {
+    const moveData = await $fetch(`https://pokeapi.co/api/v2/move/${moveName}`)
+    attackerMove.value = moveData
+  } catch (err) {
+    console.error('Error loading move:', err)
+  }
+}
+
 // Calculate damage
 const calculate = () => {
   if (!attacker.value || !defender.value || !attackerMove.value) {
@@ -293,10 +303,7 @@ const reset = () => {
                     :key="move.move.name"
                     class="move-btn"
                     :class="{ 'move-btn--active': attackerMove?.name === move.move.name }"
-                    @click="async () => {
-                      const moveData = await $fetch(`https://pokeapi.co/api/v2/move/${move.move.name}`)
-                      attackerMove = moveData
-                    }"
+                    @click="selectMove(move.move.name)"
                   >
                     {{ move.move.name.replace('-', ' ') }}
                   </button>
