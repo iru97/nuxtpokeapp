@@ -11,7 +11,10 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    '@pinia/nuxt',
     '@nuxt/fonts',
+    '@nuxt/image',
+    '@nuxt/icon',
     'vuetify-nuxt-module',
     '@nuxtjs/tailwindcss'
   ],
@@ -35,6 +38,25 @@ export default defineNuxtConfig({
     },
     vuetifyOptions: {
       // @TODO: list all vuetify options
+    }
+  },
+
+  // TypeScript configuration
+  typescript: {
+    strict: true,
+    typeCheck: true
+  },
+
+  // Image optimization
+  image: {
+    quality: 80,
+    format: ['webp']
+  },
+
+  // Runtime config for API
+  runtimeConfig: {
+    public: {
+      apiBase: 'https://pokeapi.co/api/v2'
     }
   }
 })
