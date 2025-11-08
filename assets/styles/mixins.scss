@@ -1,0 +1,318 @@
+@import './variables.scss';
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Responsive breakpoints
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (min-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $breakpoint == 'sm' {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// Card styling
+@mixin card($padding: $card-padding, $radius: $card-border-radius, $shadow: $card-shadow) {
+  background: $surface;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  padding: $padding;
+}
+
+@mixin card-hover {
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $card-hover-shadow;
+  }
+}
+
+// Scrollbar styling
+@mixin custom-scrollbar($width: 8px, $track-color: $gray-200, $thumb-color: $gray-400) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $radius-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $radius-full;
+
+    &:hover {
+      background: darken($thumb-color, 10%);
+    }
+  }
+}
+
+// Loading skeleton
+@mixin skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    $gray-200 0%,
+    $gray-300 50%,
+    $gray-200 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Focus styles
+@mixin focus-ring($color: $primary) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($color, 0.3);
+}
+
+// Gradient backgrounds
+@mixin gradient-background($color1, $color2, $angle: 135deg) {
+  background: linear-gradient($angle, $color1 0%, $color2 100%);
+}
+
+// Type badge styling
+@mixin type-badge($type-color) {
+  background-color: $type-color;
+  color: $white;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+  box-shadow: $shadow-sm;
+}
+
+// Glass morphism effect
+@mixin glass-morphism($opacity: 0.7) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+// Stat bar
+@mixin stat-bar($color, $value) {
+  position: relative;
+  height: 8px;
+  background-color: $gray-200;
+  border-radius: $radius-full;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: $value;
+    background-color: $color;
+    border-radius: $radius-full;
+    transition: width $transition-slow;
+  }
+}
+
+// Disabled state
+@mixin disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// Hover lift effect
+@mixin hover-lift($distance: -4px) {
+  transition: transform $transition-base, box-shadow $transition-base;
+
+  &:hover:not(:disabled) {
+    transform: translateY($distance);
+  }
+}
+
+// Shine effect animation
+@mixin shine-effect {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transition: left $transition-slow;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Pokemon type color getter
+@function get-type-color($type) {
+  @if $type == 'normal' { @return $type-normal; }
+  @else if $type == 'fire' { @return $type-fire; }
+  @else if $type == 'water' { @return $type-water; }
+  @else if $type == 'electric' { @return $type-electric; }
+  @else if $type == 'grass' { @return $type-grass; }
+  @else if $type == 'ice' { @return $type-ice; }
+  @else if $type == 'fighting' { @return $type-fighting; }
+  @else if $type == 'poison' { @return $type-poison; }
+  @else if $type == 'ground' { @return $type-ground; }
+  @else if $type == 'flying' { @return $type-flying; }
+  @else if $type == 'psychic' { @return $type-psychic; }
+  @else if $type == 'bug' { @return $type-bug; }
+  @else if $type == 'rock' { @return $type-rock; }
+  @else if $type == 'ghost' { @return $type-ghost; }
+  @else if $type == 'dragon' { @return $type-dragon; }
+  @else if $type == 'dark' { @return $type-dark; }
+  @else if $type == 'steel' { @return $type-steel; }
+  @else if $type == 'fairy' { @return $type-fairy; }
+  @else { @return $gray-500; }
+}
+
+// Grid layout helpers
+@mixin grid($columns: 3, $gap: $grid-gutter) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+@mixin grid-responsive {
+  display: grid;
+  gap: $grid-gutter;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+// Aspect ratio
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: ($height / $width) * 100%;
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Truncate text with specific width
+@mixin truncate($max-width: 100%) {
+  max-width: $max-width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Visually hidden but accessible
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// Reset button styles
+@mixin reset-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Overlay
+@mixin overlay($color: rgba(0, 0, 0, 0.5), $z-index: $z-index-modal-backdrop) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $color;
+  z-index: $z-index;
+}
