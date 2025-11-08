@@ -46,7 +46,7 @@ export const useAchievementsStore = defineStore('achievements', {
     /**
      * Get all achievements
      */
-    all Achievements(): Achievement[] {
+    allAchievements(): Achievement[] {
       return Object.values(this.achievements)
     },
 
