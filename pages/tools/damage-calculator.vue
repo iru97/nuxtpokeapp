@@ -10,7 +10,6 @@ useSeoMeta({
   ogDescription: 'Advanced Pokemon damage calculator with full Gen 9 support'
 })
 
-const pokemonApi = usePokemonApi()
 const achievementsStore = useAchievementsStore()
 
 // Attacker
@@ -172,8 +171,12 @@ const reset = () => {
                 placeholder="Search Pokemon (e.g., Pikachu or 25)"
                 class="pokemon-selector__input"
                 @keyup.enter="async () => {
-                  const pokemon = await pokemonApi.getPokemon(attackerSearch)
-                  if (pokemon) attacker = pokemon
+                  try {
+                    const pokemon = await $fetch<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${attackerSearch.toLowerCase()}`)
+                    if (pokemon) attacker = pokemon
+                  } catch (err) {
+                    console.error('Pokemon not found:', err)
+                  }
                 }"
               />
               <div v-if="attacker" class="pokemon-card-mini">
@@ -274,8 +277,12 @@ const reset = () => {
                 placeholder="Search Pokemon (e.g., Charizard or 6)"
                 class="pokemon-selector__input"
                 @keyup.enter="async () => {
-                  const pokemon = await pokemonApi.getPokemon(defenderSearch)
-                  if (pokemon) defender = pokemon
+                  try {
+                    const pokemon = await $fetch<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${defenderSearch.toLowerCase()}`)
+                    if (pokemon) defender = pokemon
+                  } catch (err) {
+                    console.error('Pokemon not found:', err)
+                  }
                 }"
               />
               <div v-if="defender" class="pokemon-card-mini">

@@ -12,8 +12,6 @@ useSeoMeta({
   description: 'Generate random Pokemon, teams, and challenges. Perfect for Nuzlocke runs, monotype challenges, and fun randomizers.'
 })
 
-const pokemonApi = usePokemonApi()
-
 // Single Pokemon
 const randomPokemon = ref<any>(null)
 const loadingPokemon = ref(false)
@@ -29,19 +27,29 @@ const challengeTeam = ref<any[]>([])
 
 const generateSinglePokemon = async () => {
   loadingPokemon.value = true
-  const id = getRandomPokemonId()
-  randomPokemon.value = await pokemonApi.getPokemon(id.toString())
-  loadingPokemon.value = false
+  try {
+    const id = getRandomPokemonId()
+    randomPokemon.value = await $fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+  } catch (err) {
+    console.error('Error loading pokemon:', err)
+  } finally {
+    loadingPokemon.value = false
+  }
 }
 
 const generateTeam = async () => {
   loadingTeam.value = true
-  const ids = generateRandomTeam(teamSize.value)
-
-  const pokemonPromises = ids.map(id => pokemonApi.getPokemon(id.toString()))
-  randomTeam.value = (await Promise.all(pokemonPromises)).filter(Boolean)
-
-  loadingTeam.value = false
+  try {
+    const ids = generateRandomTeam(teamSize.value)
+    const pokemonPromises = ids.map(id =>
+      $fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).catch(() => null)
+    )
+    randomTeam.value = (await Promise.all(pokemonPromises)).filter(Boolean)
+  } catch (err) {
+    console.error('Error generating team:', err)
+  } finally {
+    loadingTeam.value = false
+  }
 }
 
 const generateChallenge = async () => {
@@ -49,12 +57,18 @@ const generateChallenge = async () => {
 
   // Generate a team for the challenge
   if (currentChallenge.value.teamSize) {
-    const ids = generateRandomTeam(
-      currentChallenge.value.teamSize,
-      currentChallenge.value.filters
-    )
-    const pokemonPromises = ids.map(id => pokemonApi.getPokemon(id.toString()))
-    challengeTeam.value = (await Promise.all(pokemonPromises)).filter(Boolean)
+    try {
+      const ids = generateRandomTeam(
+        currentChallenge.value.teamSize,
+        currentChallenge.value.filters
+      )
+      const pokemonPromises = ids.map(id =>
+        $fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).catch(() => null)
+      )
+      challengeTeam.value = (await Promise.all(pokemonPromises)).filter(Boolean)
+    } catch (err) {
+      console.error('Error generating challenge team:', err)
+    }
   }
 }
 
