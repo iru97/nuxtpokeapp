@@ -24,6 +24,12 @@ const loadingFeatured = ref(true)
 const pokemonOfTheDay = ref<Pokemon | null>(null)
 const loadingPotd = ref(true)
 
+// Scroll animations and parallax
+const { parallaxStyle } = useParallax({ speed: 0.3 })
+const statsSection = useScrollAnimation({ threshold: 0.2 })
+const quickLinksSection = useScrollAnimation({ threshold: 0.1 })
+const featuredSection = useScrollAnimation({ threshold: 0.1 })
+
 // Stats
 const stats = [
   { icon: 'mdi:pokeball', label: 'Total Pokémon', value: '1,025+', color: '#ef5350' },
@@ -77,7 +83,8 @@ onMounted(async () => {
 <template>
   <div class="home-page">
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" role="banner">
+      <div class="hero__background" :style="parallaxStyle" aria-hidden="true" />
       <div class="hero__container">
         <div class="hero__content">
           <h1 class="hero__title">
@@ -87,25 +94,25 @@ onMounted(async () => {
             Your ultimate companion for exploring the world of Pokémon
           </p>
           <div class="hero__actions">
-            <NuxtLink to="/pokemons" class="hero__btn hero__btn--primary">
-              <Icon name="mdi:pokeball" />
+            <NuxtLink to="/pokemons" class="hero__btn hero__btn--primary" aria-label="Explore Pokédex">
+              <Icon name="mdi:pokeball" aria-hidden="true" />
               <span>Explore Pokédex</span>
             </NuxtLink>
-            <NuxtLink to="/favorites" class="hero__btn hero__btn--secondary">
-              <Icon name="mdi:heart-outline" />
+            <NuxtLink to="/favorites" class="hero__btn hero__btn--secondary" aria-label="View my favorites">
+              <Icon name="mdi:heart-outline" aria-hidden="true" />
               <span>My Favorites</span>
             </NuxtLink>
           </div>
         </div>
 
-        <div class="hero__image">
+        <div class="hero__image" aria-hidden="true">
           <Icon name="mdi:pokeball" class="hero__pokeball" />
         </div>
       </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="stats">
+    <section ref="statsSection.elementRef" class="stats scroll-fade" :class="{ 'is-visible': statsSection.isVisible.value }">
       <div class="stats__container">
         <div
           v-for="stat in stats"
@@ -113,7 +120,7 @@ onMounted(async () => {
           class="stats__card"
           :style="{ '--stat-color': stat.color }"
         >
-          <Icon :name="stat.icon" class="stats__icon" />
+          <Icon :name="stat.icon" class="stats__icon" aria-hidden="true" />
           <div class="stats__content">
             <span class="stats__value">{{ stat.value }}</span>
             <span class="stats__label">{{ stat.label }}</span>
@@ -123,7 +130,7 @@ onMounted(async () => {
     </section>
 
     <!-- Quick Links -->
-    <section class="quick-links">
+    <section ref="quickLinksSection.elementRef" class="quick-links scroll-fade" :class="{ 'is-visible': quickLinksSection.isVisible.value }">
       <div class="quick-links__container">
         <h2 class="section-title">Quick Access</h2>
         <div class="quick-links__grid">
@@ -203,7 +210,7 @@ onMounted(async () => {
     </section>
 
     <!-- Featured Pokemon -->
-    <section class="featured">
+    <section ref="featuredSection.elementRef" class="featured scroll-fade" :class="{ 'is-visible': featuredSection.isVisible.value }">
       <div class="featured__container">
         <h2 class="section-title">Featured Pokémon</h2>
 
@@ -213,7 +220,7 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div v-else class="featured__grid">
+        <div v-else class="featured__grid featured__grid--bento">
           <PokemonCard
             v-for="pokemon in featuredPokemon"
             :key="pokemon.id"
@@ -277,6 +284,11 @@ onMounted(async () => {
   }
 }
 
+// Scroll fade animation
+.scroll-fade {
+  @include scroll-fade-in;
+}
+
 // Hero Section
 .hero {
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
@@ -289,6 +301,18 @@ onMounted(async () => {
     padding: $spacing-12 0;
   }
 
+  // Parallax background
+  &__background {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    right: 0;
+    bottom: -100px;
+    background: linear-gradient(135deg, rgba($primary, 0.3) 0%, rgba($primary-dark, 0.3) 100%);
+    opacity: 0.5;
+    z-index: 0;
+  }
+
   &__container {
     max-width: $container-2xl;
     margin: 0 auto;
@@ -297,6 +321,8 @@ onMounted(async () => {
     grid-template-columns: 1fr 1fr;
     gap: $spacing-8;
     align-items: center;
+    position: relative;
+    z-index: 1;
 
     @media (max-width: $breakpoint-md) {
       grid-template-columns: 1fr;
@@ -315,14 +341,10 @@ onMounted(async () => {
 
   &__title {
     margin: 0;
-    font-size: $font-size-5xl;
+    @include fluid-type(2.5rem, 4.5rem);
     font-weight: $font-weight-bold;
     font-family: $font-family-secondary;
     line-height: $line-height-tight;
-
-    @media (max-width: $breakpoint-sm) {
-      font-size: $font-size-4xl;
-    }
   }
 
   &__subtitle {
@@ -667,7 +689,16 @@ onMounted(async () => {
     padding: 0 $spacing-6;
   }
 
-  &__loading,
+  &__loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $spacing-6;
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   &__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -675,6 +706,33 @@ onMounted(async () => {
 
     @media (max-width: $breakpoint-sm) {
       grid-template-columns: 1fr;
+    }
+
+    // Bento grid variant for featured
+    &--bento {
+      @include bento-grid(3, $spacing-6, 320px);
+
+      @media (min-width: $breakpoint-md) {
+        // First card spans 2 columns and 2 rows (Pikachu)
+        > :nth-child(1) {
+          grid-column: span 2;
+          grid-row: span 2;
+        }
+
+        // Second card spans 1 column and 2 rows (Charizard)
+        > :nth-child(2) {
+          grid-row: span 2;
+        }
+
+        // Third card normal (Mewtwo)
+
+        // Fourth card spans 2 columns (Lucario)
+        > :nth-child(4) {
+          grid-column: span 2;
+        }
+
+        // Fifth and sixth cards normal
+      }
     }
   }
 }
@@ -797,6 +855,24 @@ onMounted(async () => {
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .hero__pokeball,
+  .potd__image {
+    animation: none !important;
+  }
+
+  .hero__btn,
+  .quick-link,
+  .stats__card,
+  .generation-card,
+  .btn-view-all {
+    &:hover {
+      transform: none !important;
+    }
   }
 }
 </style>

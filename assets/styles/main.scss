@@ -1,5 +1,6 @@
 @import './variables.scss';
 @import './mixins.scss';
+@import './dark-theme.scss';
 
 // Global resets and base styles
 *,
@@ -144,20 +145,6 @@ button {
 // Custom scrollbar for the app
 .custom-scrollbar {
   @include custom-scrollbar();
-}
-
-// Dark mode
-.dark {
-  background-color: $dark-bg-primary;
-  color: $dark-text-primary;
-
-  .surface {
-    background-color: $dark-surface;
-  }
-
-  .text-secondary {
-    color: $dark-text-secondary;
-  }
 }
 
 // Page transitions
