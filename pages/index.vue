@@ -26,8 +26,6 @@ const loadingPotd = ref(true)
 
 // Scroll animations and parallax
 const { parallaxStyle } = useParallax({ speed: 0.3 })
-const statsSection = useScrollAnimation({ threshold: 0.2 })
-const quickLinksSection = useScrollAnimation({ threshold: 0.1 })
 const featuredSection = useScrollAnimation({ threshold: 0.1 })
 
 // Stats
@@ -112,7 +110,7 @@ onMounted(async () => {
     </section>
 
     <!-- Stats Section -->
-    <section ref="statsSection.elementRef" class="stats scroll-fade" :class="{ 'is-visible': statsSection.isVisible.value }">
+    <section class="stats">
       <div class="stats__container">
         <div
           v-for="stat in stats"
@@ -130,7 +128,7 @@ onMounted(async () => {
     </section>
 
     <!-- Quick Links -->
-    <section ref="quickLinksSection.elementRef" class="quick-links scroll-fade" :class="{ 'is-visible': quickLinksSection.isVisible.value }">
+    <section class="quick-links">
       <div class="quick-links__container">
         <h2 class="section-title">Quick Access</h2>
         <div class="quick-links__grid">
