@@ -9,15 +9,17 @@ const favoritesStore = useFavoritesStore()
 const comparisonStore = useComparisonStore()
 const teamStore = useTeamStore()
 const filtersStore = useFiltersStore()
+const { isDark, toggleDark, initDarkMode } = useDarkMode()
 
 const favoritesCount = computed(() => favoritesStore.favorites.length)
 const comparisonCount = computed(() => comparisonStore.count)
 const teamCount = computed(() => teamStore.teamSize)
 
-// Initialize stores
+// Initialize stores and dark mode
 onMounted(() => {
   comparisonStore.init()
   teamStore.init()
+  initDarkMode()
 })
 
 // Navigation links
@@ -127,6 +129,16 @@ onMounted(() => {
         >
           <Icon name="mdi:magnify" aria-hidden="true" />
           <span class="navbar__search-hint" aria-hidden="true">⌘K</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button
+          class="navbar__action-btn navbar__theme-toggle"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          :aria-pressed="isDark"
+          @click="toggleDark"
+        >
+          <Icon :name="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'" aria-hidden="true" />
         </button>
 
         <!-- Mobile Menu Toggle -->
