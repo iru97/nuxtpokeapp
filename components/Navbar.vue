@@ -7,14 +7,17 @@ const route = useRoute()
 
 const favoritesStore = useFavoritesStore()
 const comparisonStore = useComparisonStore()
+const teamStore = useTeamStore()
 const filtersStore = useFiltersStore()
 
 const favoritesCount = computed(() => favoritesStore.favorites.length)
 const comparisonCount = computed(() => comparisonStore.count)
+const teamCount = computed(() => teamStore.teamSize)
 
-// Initialize comparison store
+// Initialize stores
 onMounted(() => {
   comparisonStore.init()
+  teamStore.init()
 })
 
 // Navigation links
@@ -22,6 +25,7 @@ const navLinks = [
   { to: '/', label: 'Home', icon: 'mdi:home' },
   { to: '/pokemons', label: 'Pokédex', icon: 'mdi:pokeball' },
   { to: '/generations', label: 'Generations', icon: 'mdi:earth' },
+  { to: '/team-builder', label: 'Team Builder', icon: 'mdi:account-group', badge: teamCount },
   { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
 ]

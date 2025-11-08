@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const favoritesStore = useFavoritesStore()
 const comparisonStore = useComparisonStore()
+const teamStore = useTeamStore()
 const router = useRouter()
 
 const isFavorite = computed(() => {
@@ -23,6 +24,11 @@ const isFavorite = computed(() => {
 const isInComparison = computed(() => {
   if (!props.pokemon) return false
   return comparisonStore.isSelected(props.pokemon.id)
+})
+
+const isInTeam = computed(() => {
+  if (!props.pokemon) return false
+  return teamStore.isInTeam(props.pokemon.id)
 })
 
 const primaryType = computed(() => {
@@ -53,6 +59,24 @@ const toggleComparison = (event: Event) => {
     if (!success && !comparisonStore.isSelected(props.pokemon.id)) {
       // Comparison is full
       alert('Comparison is full. Maximum 3 Pokémon allowed.')
+    }
+  }
+}
+
+const toggleTeam = (event: Event) => {
+  event.stopPropagation()
+  if (props.pokemon) {
+    if (teamStore.isInTeam(props.pokemon.id)) {
+      // Find slot and remove
+      const teamPokemon = teamStore.currentTeam.find(tp => tp.pokemon.id === props.pokemon!.id)
+      if (teamPokemon) {
+        teamStore.removePokemon(teamPokemon.slot)
+      }
+    } else {
+      const success = teamStore.addPokemon(props.pokemon)
+      if (!success) {
+        alert('Team is full. Maximum 6 Pokémon allowed.')
+      }
     }
   }
 }
@@ -99,6 +123,14 @@ const goToDetail = () => {
     <div class="pokemon-card__header">
       <span class="pokemon-card__id">#{{ String(pokemon.id).padStart(3, '0') }}</span>
       <div class="pokemon-card__actions">
+        <button
+          class="pokemon-card__action pokemon-card__team"
+          :class="{ 'pokemon-card__action--active': isInTeam }"
+          @click="toggleTeam"
+          title="Add to team"
+        >
+          <Icon :name="isInTeam ? 'mdi:account-group' : 'mdi:account-group-outline'" />
+        </button>
         <button
           class="pokemon-card__action"
           :class="{ 'pokemon-card__action--active': isInComparison }"
@@ -264,6 +296,21 @@ const goToDetail = () => {
 
       &:hover {
         background-color: rgba($primary, 0.2);
+      }
+    }
+  }
+
+  &__team {
+    &:hover {
+      color: $success;
+    }
+
+    &.pokemon-card__action--active {
+      color: $success;
+      background-color: rgba($success, 0.1);
+
+      &:hover {
+        background-color: rgba($success, 0.2);
       }
     }
   }
