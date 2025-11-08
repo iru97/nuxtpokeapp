@@ -31,6 +31,8 @@ const navLinks = [
   { to: '/team-builder', label: 'Team Builder', icon: 'mdi:account-group', badge: teamCount },
   { to: '/compare', label: 'Compare', icon: 'mdi:compare', badge: comparisonCount },
   { to: '/favorites', label: 'Favorites', icon: 'mdi:heart', badge: favoritesCount },
+  { to: '/collection/checklist', label: 'Checklist', icon: 'mdi:checkbox-marked-circle-outline' },
+  { to: '/tools/damage-calculator', label: 'Damage Calc', icon: 'mdi:calculator' },
   { to: '/stats', label: 'Stats', icon: 'mdi:chart-box-outline' },
 ]
 
