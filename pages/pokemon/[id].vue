@@ -205,6 +205,14 @@ onMounted(() => {
 
   &__content {
     padding: $spacing-6;
+
+    @media (max-width: $breakpoint-md) {
+      padding: $spacing-4;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-3;
+    }
   }
 }
 </style>

@@ -52,9 +52,19 @@ const selectTab = (tabId: string) => {
     overflow-x: auto;
     @include custom-scrollbar(4px, transparent, $gray-300);
     padding-bottom: $spacing-2;
+    // Snap scrolling for better mobile UX
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+
+    @media (max-width: $breakpoint-md) {
+      gap: $spacing-1;
+      padding: 0 $spacing-2 $spacing-2;
+      margin: 0 (-$spacing-2);
+    }
 
     @media (max-width: $breakpoint-sm) {
-      gap: $spacing-1;
+      padding: 0 $spacing-1 $spacing-2;
+      margin: 0 (-$spacing-1);
     }
   }
 
@@ -72,6 +82,8 @@ const selectTab = (tabId: string) => {
     white-space: nowrap;
     transition: all $transition-fast;
     cursor: pointer;
+    scroll-snap-align: start;
+    flex-shrink: 0; // Prevent tabs from shrinking
 
     &:hover:not(&--active) {
       background: $gray-50;
@@ -95,12 +107,41 @@ const selectTab = (tabId: string) => {
       transition: color $transition-fast;
     }
 
-    @media (max-width: $breakpoint-sm) {
-      padding: $spacing-2 $spacing-3;
+    @media (max-width: $breakpoint-md) {
+      padding: $spacing-2 $spacing-4;
       font-size: $font-size-sm;
+      gap: $spacing-1;
 
       svg {
         font-size: 18px;
+      }
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-2 $spacing-3;
+      font-size: $font-size-xs;
+
+      svg {
+        font-size: 16px;
+      }
+
+      span {
+        display: none; // Hide text labels on very small screens, show only icons
+      }
+
+      // Make icon-only buttons more square
+      min-width: 44px; // Touch target size
+      min-height: 44px;
+      padding: $spacing-2;
+    }
+
+    // Show text on active tab even on mobile
+    &--active {
+      @media (max-width: $breakpoint-sm) {
+        span {
+          display: inline; // Show label for active tab
+        }
+        padding: $spacing-2 $spacing-3;
       }
     }
   }

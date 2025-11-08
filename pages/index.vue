@@ -26,9 +26,6 @@ const loadingPotd = ref(true)
 
 // Scroll animations and parallax
 const { parallaxStyle } = useParallax({ speed: 0.3 })
-const statsSection = useScrollAnimation({ threshold: 0.2 })
-const quickLinksSection = useScrollAnimation({ threshold: 0.1 })
-const featuredSection = useScrollAnimation({ threshold: 0.1 })
 
 // Stats
 const stats = [
@@ -38,16 +35,16 @@ const stats = [
   { icon: 'mdi:sword-cross', label: 'Moves', value: '900+', color: '#42a5f5' },
 ]
 
-// Quick links
+// Quick links - Top 6 most important
 const quickLinks = [
-  { to: '/pokemons', icon: 'mdi:pokeball', label: 'Browse All', description: 'Explore the complete Pokédex', color: '#ef5350' },
-  { to: '/advanced-search', icon: 'mdi:filter-cog', label: 'Advanced Search', description: 'Find with detailed filters', color: '#42a5f5' },
-  { to: '/team-builder', icon: 'mdi:account-group', label: 'Team Builder', description: 'Build your dream team', color: '#66bb6a' },
-  { to: '/compare', icon: 'mdi:compare', label: 'Compare', description: 'Compare up to 3 Pokémon', color: '#ffa726' },
-  { to: '/generations', icon: 'mdi:earth', label: 'Generations', description: 'Browse by generation', color: '#9c27b0' },
-  { to: '/stats', icon: 'mdi:chart-box-outline', label: 'Statistics', description: 'Pokémon insights & records', color: '#26c6da' },
-  { to: '/favorites', icon: 'mdi:heart', label: 'Favorites', description: 'Your saved Pokémon', color: '#ec407a' },
-  { to: '/pokemons?generation=1', icon: 'mdi:fire', label: 'Gen I', description: 'Classic Kanto Pokémon', color: '#ff9800' },
+  { to: '/pokemons', icon: 'mdi:pokeball', label: 'Browse All', description: 'Explore all 1,025+ Pokémon', color: '#ef5350', featured: true },
+  { to: '/advanced-search', icon: 'mdi:filter-cog', label: 'Advanced Search', description: 'Find with detailed filters', color: '#42a5f5', featured: true },
+  { to: '/team-builder', icon: 'mdi:account-group', label: 'Team Builder', description: 'Build your dream team', color: '#66bb6a', featured: true },
+  { to: '/compare', icon: 'mdi:compare', label: 'Compare', description: 'Compare Pokémon stats', color: '#ffa726', featured: false },
+  { to: '/tools/damage-calculator', icon: 'mdi:calculator', label: 'Damage Calculator', description: 'Calculate battle damage', color: '#9c27b0', featured: true },
+  { to: '/tools/random-generators', icon: 'mdi:dice-multiple', label: 'Random Generator', description: 'Generate teams & challenges', color: '#26c6da', featured: true },
+  { to: '/favorites', icon: 'mdi:heart', label: 'Favorites', description: 'Your saved Pokémon', color: '#ec407a', featured: false },
+  { to: '/stats', icon: 'mdi:chart-box-outline', label: 'Stats & Rankings', description: 'View records & insights', color: '#ff9800', featured: true },
 ]
 
 // Load featured Pokemon
@@ -112,7 +109,7 @@ onMounted(async () => {
     </section>
 
     <!-- Stats Section -->
-    <section ref="statsSection.elementRef" class="stats scroll-fade" :class="{ 'is-visible': statsSection.isVisible.value }">
+    <section class="stats">
       <div class="stats__container">
         <div
           v-for="stat in stats"
@@ -130,23 +127,28 @@ onMounted(async () => {
     </section>
 
     <!-- Quick Links -->
-    <section ref="quickLinksSection.elementRef" class="quick-links scroll-fade" :class="{ 'is-visible': quickLinksSection.isVisible.value }">
+    <section class="quick-links">
       <div class="quick-links__container">
-        <h2 class="section-title">Quick Access</h2>
+        <div class="quick-links__header">
+          <h2 class="section-title">Quick Access</h2>
+          <p class="section-subtitle">Jump straight to the most popular features</p>
+        </div>
         <div class="quick-links__grid">
           <NuxtLink
-            v-for="link in quickLinks"
+            v-for="link in quickLinks.filter(l => l.featured)"
             :key="link.to"
             :to="link.to"
             class="quick-link"
             :style="{ '--link-color': link.color }"
           >
-            <Icon :name="link.icon" class="quick-link__icon" />
+            <div class="quick-link__icon-wrapper">
+              <Icon :name="link.icon" class="quick-link__icon" />
+            </div>
             <div class="quick-link__content">
               <h3 class="quick-link__title">{{ link.label }}</h3>
               <p class="quick-link__description">{{ link.description }}</p>
             </div>
-            <Icon name="mdi:chevron-right" class="quick-link__arrow" />
+            <Icon name="mdi:arrow-right" class="quick-link__arrow" />
           </NuxtLink>
         </div>
       </div>
@@ -210,7 +212,7 @@ onMounted(async () => {
     </section>
 
     <!-- Featured Pokemon -->
-    <section ref="featuredSection.elementRef" class="featured scroll-fade" :class="{ 'is-visible': featuredSection.isVisible.value }">
+    <section class="featured">
       <div class="featured__container">
         <h2 class="section-title">Featured Pokémon</h2>
 
@@ -293,23 +295,25 @@ onMounted(async () => {
 .hero {
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
   color: $white;
-  padding: $spacing-20 0;
+  padding: $spacing-12 0 $spacing-10;
   position: relative;
   overflow: hidden;
 
   @media (max-width: $breakpoint-md) {
-    padding: $spacing-12 0;
+    padding: $spacing-8 0 $spacing-6;
   }
 
-  // Parallax background
+  // Parallax background with pattern
   &__background {
     position: absolute;
     top: -100px;
     left: 0;
     right: 0;
     bottom: -100px;
-    background: linear-gradient(135deg, rgba($primary, 0.3) 0%, rgba($primary-dark, 0.3) 100%);
-    opacity: 0.5;
+    background:
+      radial-gradient(circle at 20% 50%, rgba($white, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba($white, 0.1) 0%, transparent 50%);
+    opacity: 0.3;
     z-index: 0;
   }
 
@@ -419,7 +423,7 @@ onMounted(async () => {
 
 // Stats Section
 .stats {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
   background: $bg-secondary;
 
   &__container {
@@ -470,9 +474,19 @@ onMounted(async () => {
   }
 }
 
+// Section subtitle
+.section-subtitle {
+  text-align: center;
+  font-size: $font-size-lg;
+  color: $text-secondary;
+  margin: -$spacing-6 auto $spacing-8;
+  max-width: 600px;
+}
+
 // Quick Links
 .quick-links {
-  padding: $spacing-12 0;
+  padding: $spacing-10 0;
+  background: linear-gradient(180deg, $white 0%, $bg-secondary 100%);
 
   &__container {
     max-width: $container-2xl;
@@ -480,41 +494,90 @@ onMounted(async () => {
     padding: 0 $spacing-6;
   }
 
+  &__header {
+    margin-bottom: $spacing-8;
+  }
+
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: $spacing-4;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-6;
+
+    @media (max-width: $breakpoint-lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: 1fr;
+    }
   }
 }
 
 .quick-link {
-  @include flex-center;
+  display: flex;
+  flex-direction: column;
   gap: $spacing-4;
   padding: $spacing-6;
   background: $white;
-  border: 2px solid $gray-200;
+  border: 2px solid transparent;
   border-radius: $radius-xl;
   text-decoration: none;
   transition: all $transition-base;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--link-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform $transition-base;
+  }
 
   &:hover {
     border-color: var(--link-color);
-    box-shadow: $shadow-lg;
-    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+    transform: translateY(-8px);
 
-    .quick-link__icon {
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .quick-link__icon-wrapper {
       transform: scale(1.1);
+      background: var(--link-color);
+
+      .quick-link__icon {
+        color: $white;
+      }
     }
 
     .quick-link__arrow {
-      transform: translateX(4px);
+      transform: translateX(8px);
     }
   }
 
+  &__icon-wrapper {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--link-color), 0.1);
+    border-radius: $radius-lg;
+    transition: all $transition-base;
+  }
+
   &__icon {
-    font-size: 48px;
+    font-size: 32px;
     color: var(--link-color);
-    transition: transform $transition-base;
+    transition: all $transition-base;
   }
 
   &__content {
@@ -522,20 +585,24 @@ onMounted(async () => {
   }
 
   &__title {
-    margin: 0 0 $spacing-1;
-    font-size: $font-size-xl;
+    margin: 0 0 $spacing-2;
+    font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     color: $text-primary;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__description {
     margin: 0;
     font-size: $font-size-sm;
     color: $text-secondary;
+    line-height: 1.5;
   }
 
   &__arrow {
-    font-size: 24px;
+    font-size: 20px;
     color: var(--link-color);
     transition: transform $transition-base;
   }
@@ -543,7 +610,7 @@ onMounted(async () => {
 
 // Pokemon of the Day
 .potd {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
   background: $bg-secondary;
 
   &__container {
@@ -681,7 +748,7 @@ onMounted(async () => {
 
 // Featured
 .featured {
-  padding: $spacing-12 0;
+  padding: $spacing-6 0;
 
   &__container {
     max-width: $container-2xl;
@@ -739,8 +806,8 @@ onMounted(async () => {
 
 // Generations
 .generations {
-  padding: $spacing-12 0;
-  background: $bg-secondary;
+  padding: $spacing-10 0;
+  background: linear-gradient(180deg, $bg-secondary 0%, $white 100%);
 
   &__container {
     max-width: $container-2xl;
@@ -750,8 +817,16 @@ onMounted(async () => {
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: $spacing-4;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-6;
+
+    @media (max-width: $breakpoint-lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__view-all {
@@ -791,32 +866,53 @@ onMounted(async () => {
 
 .generation-card {
   @include flex-column;
-  align-items: center;
-  gap: $spacing-2;
+  gap: $spacing-3;
   padding: $spacing-6;
   background: $white;
-  border: 2px solid $gray-200;
   border-radius: $radius-xl;
   text-decoration: none;
-  text-align: center;
   transition: all $transition-base;
+  box-shadow: $shadow-md;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, $primary, $secondary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform $transition-base;
+  }
 
   &:hover {
-    border-color: $primary;
-    box-shadow: $shadow-lg;
-    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+    transform: translateY(-8px);
+
+    &::before {
+      transform: scaleX(1);
+    }
 
     .generation-card__number {
-      transform: scale(1.1);
+      transform: scale(1.15);
+      color: $primary;
     }
   }
 
   &__number {
-    font-size: $font-size-3xl;
+    font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
-    color: $primary;
+    color: $text-primary;
     font-family: $font-family-mono;
-    transition: transform $transition-base;
+    transition: all $transition-base;
+    background: $gray-50;
+    padding: $spacing-2 $spacing-4;
+    border-radius: $radius-full;
+    align-self: flex-start;
   }
 
   &__name {

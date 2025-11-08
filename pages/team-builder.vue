@@ -511,6 +511,12 @@ const goToPokedex = () => {
     background: $white;
     border-radius: $radius-xl;
     box-shadow: $shadow-md;
+
+    @media (max-width: $breakpoint-md) {
+      flex-direction: column;
+      align-items: stretch;
+      padding: $spacing-4;
+    }
   }
 
   &__header-content {
@@ -521,6 +527,10 @@ const goToPokedex = () => {
   &__header-icon {
     font-size: 64px;
     color: $primary;
+
+    @media (max-width: $breakpoint-md) {
+      font-size: 48px;
+    }
   }
 
   &__title-wrapper {
@@ -607,6 +617,19 @@ const goToPokedex = () => {
     @include flex-center;
     gap: $spacing-2;
     flex-wrap: wrap;
+
+    @media (max-width: $breakpoint-md) {
+      justify-content: stretch;
+
+      // Create a grid on medium screens to fit buttons better
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      // On very small screens, use narrower columns
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   &__action-btn {
@@ -637,6 +660,22 @@ const goToPokedex = () => {
     svg {
       font-size: 18px;
     }
+
+    @media (max-width: $breakpoint-sm) {
+      flex-direction: column;
+      padding: $spacing-2;
+      gap: 4px;
+      font-size: $font-size-xs;
+
+      svg {
+        font-size: 20px;
+      }
+
+      span {
+        font-size: 10px;
+        line-height: 1;
+      }
+    }
   }
 
   &__section-title {
@@ -659,25 +698,40 @@ const goToPokedex = () => {
     background: $white;
     border-radius: $radius-xl;
     box-shadow: $shadow-md;
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-4;
+    }
   }
 
   &__slots {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: $spacing-4;
+
+    @media (max-width: $breakpoint-md) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: $spacing-3;
+    }
 
     @media (max-width: $breakpoint-sm) {
       grid-template-columns: repeat(2, 1fr);
+      gap: $spacing-2;
+    }
+
+    @media (max-width: 400px) {
+      grid-template-columns: 1fr;
     }
   }
 
   &__analysis {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: $spacing-6;
 
     @media (max-width: $breakpoint-md) {
       grid-template-columns: 1fr;
+      gap: $spacing-4;
     }
   }
 }
@@ -685,6 +739,14 @@ const goToPokedex = () => {
 .team-slot {
   aspect-ratio: 1;
   min-height: 200px;
+
+  @media (max-width: $breakpoint-sm) {
+    min-height: 160px;
+  }
+
+  @media (max-width: 400px) {
+    min-height: 180px;
+  }
 
   &__pokemon {
     position: relative;
@@ -701,6 +763,11 @@ const goToPokedex = () => {
     &:hover {
       border-color: $primary;
       box-shadow: $shadow-md;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-2;
+      gap: $spacing-2;
     }
   }
 
@@ -731,6 +798,11 @@ const goToPokedex = () => {
     width: 80px;
     height: 80px;
     object-fit: contain;
+
+    @media (max-width: $breakpoint-sm) {
+      width: 60px;
+      height: 60px;
+    }
   }
 
   &__name {
@@ -740,6 +812,10 @@ const goToPokedex = () => {
     color: $text-primary;
     text-align: center;
     text-transform: capitalize;
+
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-sm;
+    }
   }
 
   &__types {
@@ -779,6 +855,10 @@ const goToPokedex = () => {
   border-radius: $radius-xl;
   box-shadow: $shadow-md;
 
+  @media (max-width: $breakpoint-sm) {
+    padding: $spacing-4;
+  }
+
   &__title {
     @include flex-center;
     gap: $spacing-2;
@@ -787,9 +867,17 @@ const goToPokedex = () => {
     font-weight: $font-weight-bold;
     color: $text-primary;
 
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-lg;
+    }
+
     svg {
       font-size: 24px;
       color: $primary;
+
+      @media (max-width: $breakpoint-sm) {
+        font-size: 20px;
+      }
     }
   }
 

@@ -194,312 +194,340 @@ const activeFiltersCount = computed(() => {
 </script>
 
 <template>
-  <div class="advanced-search">
+  <div class="page advanced-search">
     <div class="advanced-search__container">
       <!-- Header -->
-      <div class="advanced-search__header">
-        <div class="advanced-search__header-content">
-          <Icon name="mdi:filter-cog" class="advanced-search__header-icon" />
-          <div>
-            <h1 class="advanced-search__title">Advanced Search</h1>
-            <p class="advanced-search__subtitle">
-              Find Pokémon with detailed filters
+      <div class="page__header">
+        <Icon name="mdi:filter-cog" class="page__header-icon" />
+        <h1 class="page__title">Advanced Search</h1>
+        <p class="page__description">
+          Find Pokémon using powerful filters for type, stats, generation, and more
+        </p>
+      </div>
+
+      <div class="advanced-search__layout">
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+          <div class="filters-sidebar__header">
+            <h3 class="filters-sidebar__title">
+              <Icon name="mdi:tune" />
+              <span>Filters</span>
+              <span v-if="activeFiltersCount > 0" class="filter-badge">
+                {{ activeFiltersCount }}
+              </span>
+            </h3>
+
+            <button
+              v-if="activeFiltersCount > 0"
+              class="btn-reset"
+              @click="resetFilters"
+            >
+              <Icon name="mdi:refresh" />
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <div class="filters-sidebar__content">
+            <!-- Name Search -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <Icon name="mdi:magnify" />
+                <span>Name or Number</span>
+              </label>
+              <input
+                v-model="filters.name"
+                type="text"
+                placeholder="e.g., Pikachu or 25"
+                class="filter-input"
+              />
+            </div>
+
+            <!-- Type Filter -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <Icon name="mdi:shape" />
+                <span>Types{{ filters.types.length > 0 ? ` (${filters.types.length} selected)` : '' }}</span>
+              </label>
+              <div class="type-grid">
+                <button
+                  v-for="type in allTypes"
+                  :key="type"
+                  class="type-btn"
+                  :class="{ 'type-btn--active': filters.types.includes(type) }"
+                  @click="toggleType(type)"
+                >
+                  <TypeBadge :type="type" size="sm" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Generation Filter -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <Icon name="mdi:earth" />
+                <span>Generation</span>
+              </label>
+              <div class="generation-grid">
+                <button
+                  class="gen-btn"
+                  :class="{ 'gen-btn--active': filters.generation === null }"
+                  @click="filters.generation = null"
+                >
+                  All
+                </button>
+                <button
+                  v-for="gen in 9"
+                  :key="gen"
+                  class="gen-btn"
+                  :class="{ 'gen-btn--active': filters.generation === gen }"
+                  @click="filters.generation = gen"
+                >
+                  {{ gen }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Filters -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <Icon name="mdi:chart-line" />
+                <span>Stats Range</span>
+              </label>
+
+              <div class="stat-ranges">
+                <div class="stat-range">
+                  <div class="stat-range__label">
+                    <Icon name="mdi:heart" />
+                    <span>HP</span>
+                  </div>
+                  <div class="stat-range__inputs">
+                    <input
+                      v-model.number="filters.minHP"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxHP"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="stat-range">
+                  <div class="stat-range__label">
+                    <Icon name="mdi:sword" />
+                    <span>Attack</span>
+                  </div>
+                  <div class="stat-range__inputs">
+                    <input
+                      v-model.number="filters.minAttack"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxAttack"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="stat-range">
+                  <div class="stat-range__label">
+                    <Icon name="mdi:shield" />
+                    <span>Defense</span>
+                  </div>
+                  <div class="stat-range__inputs">
+                    <input
+                      v-model.number="filters.minDefense"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxDefense"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="stat-range">
+                  <div class="stat-range__label">
+                    <Icon name="mdi:run-fast" />
+                    <span>Speed</span>
+                  </div>
+                  <div class="stat-range__inputs">
+                    <input
+                      v-model.number="filters.minSpeed"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxSpeed"
+                      type="number"
+                      min="0"
+                      max="255"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Physical Filters -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <Icon name="mdi:ruler" />
+                <span>Physical Attributes</span>
+              </label>
+
+              <div class="physical-ranges">
+                <div class="physical-range">
+                  <span class="physical-range__label">Height (dm)</span>
+                  <div class="physical-range__inputs">
+                    <input
+                      v-model.number="filters.minHeight"
+                      type="number"
+                      min="0"
+                      max="100"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxHeight"
+                      type="number"
+                      min="0"
+                      max="100"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="physical-range">
+                  <span class="physical-range__label">Weight (hg)</span>
+                  <div class="physical-range__inputs">
+                    <input
+                      v-model.number="filters.minWeight"
+                      type="number"
+                      min="0"
+                      max="10000"
+                      placeholder="Min"
+                      class="stat-input"
+                    />
+                    <span>-</span>
+                    <input
+                      v-model.number="filters.maxWeight"
+                      type="number"
+                      min="0"
+                      max="10000"
+                      placeholder="Max"
+                      class="stat-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Button -->
+            <button class="btn btn--primary btn--lg btn--full" @click="performSearch">
+              <Icon name="mdi:magnify" />
+              <span>Search Pokémon</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Results Section -->
+        <main class="results-section">
+          <!-- Empty State (before search) -->
+          <div v-if="!searchPerformed" class="welcome-state">
+            <Icon name="mdi:pokeball" class="welcome-state__icon" />
+            <h2 class="welcome-state__title">Ready to Search</h2>
+            <p class="welcome-state__description">
+              Configure your filters on the left and click "Search Pokémon" to find your perfect match
             </p>
+            <div class="welcome-state__features">
+              <div class="feature-item">
+                <Icon name="mdi:shape" />
+                <span>Filter by type combinations</span>
+              </div>
+              <div class="feature-item">
+                <Icon name="mdi:chart-bar" />
+                <span>Set min/max stats ranges</span>
+              </div>
+              <div class="feature-item">
+                <Icon name="mdi:earth" />
+                <span>Search specific generations</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Filters Panel -->
-      <div class="advanced-search__filters">
-        <div class="advanced-search__filters-header">
-          <h3 class="advanced-search__filters-title">
-            <Icon name="mdi:tune" />
-            <span>Filters</span>
-            <span v-if="activeFiltersCount > 0" class="filter-badge">
-              {{ activeFiltersCount }}
-            </span>
-          </h3>
+          <!-- Results Header -->
+          <div v-else class="results-header">
+            <h2 class="results-title">
+              <Icon name="mdi:format-list-bulleted" />
+              <span>Search Results</span>
+              <span class="results-count">{{ filteredPokemon.length }}</span>
+            </h2>
+          </div>
 
-          <button
-            v-if="activeFiltersCount > 0"
-            class="btn-reset"
-            @click="resetFilters"
-          >
-            <Icon name="mdi:refresh" />
-            <span>Reset</span>
-          </button>
-        </div>
+          <!-- Loading -->
+          <div v-if="loading && searchPerformed" class="loading-state">
+            <LoadingSpinner size="lg" />
+            <p>Searching Pokémon...</p>
+          </div>
 
-        <!-- Name Search -->
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:magnify" />
-            <span>Name or Number</span>
-          </label>
-          <input
-            v-model="filters.name"
-            type="text"
-            placeholder="Search by name or number..."
-            class="filter-input"
-          />
-        </div>
+          <!-- Results Grid -->
+          <div v-else-if="searchPerformed && filteredPokemon.length > 0" class="results-grid">
+            <PokemonCard
+              v-for="pokemon in filteredPokemon"
+              :key="pokemon.id"
+              :pokemon="pokemon"
+            />
+          </div>
 
-        <!-- Type Filter -->
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:shape" />
-            <span>Types</span>
-          </label>
-          <div class="type-grid">
-            <button
-              v-for="type in allTypes"
-              :key="type"
-              class="type-btn"
-              :class="{ 'type-btn--active': filters.types.includes(type) }"
-              @click="toggleType(type)"
-            >
-              <TypeBadge :type="type" size="sm" />
+          <!-- Empty State (no results) -->
+          <div v-else-if="searchPerformed && filteredPokemon.length === 0" class="empty-state">
+            <Icon name="mdi:pokemon-go" class="empty-state__icon" />
+            <h3 class="empty-state__title">No Pokémon Found</h3>
+            <p class="empty-state__description">
+              Try adjusting your filters to see more results
+            </p>
+            <button class="btn btn--secondary" @click="resetFilters">
+              <Icon name="mdi:refresh" />
+              <span>Reset All Filters</span>
             </button>
           </div>
-        </div>
-
-        <!-- Generation Filter -->
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:earth" />
-            <span>Generation</span>
-          </label>
-          <div class="generation-grid">
-            <button
-              class="gen-btn"
-              :class="{ 'gen-btn--active': filters.generation === null }"
-              @click="filters.generation = null"
-            >
-              All
-            </button>
-            <button
-              v-for="gen in 9"
-              :key="gen"
-              class="gen-btn"
-              :class="{ 'gen-btn--active': filters.generation === gen }"
-              @click="filters.generation = gen"
-            >
-              Gen {{ gen }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Stats Filters -->
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:chart-bar" />
-            <span>HP Range</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minHP"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxHP"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:sword" />
-            <span>Attack Range</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minAttack"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxAttack"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:shield" />
-            <span>Defense Range</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minDefense"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxDefense"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:run-fast" />
-            <span>Speed Range</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minSpeed"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxSpeed"
-              type="number"
-              min="0"
-              max="255"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <!-- Physical Filters -->
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:arrow-expand-vertical" />
-            <span>Height Range (dm)</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minHeight"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxHeight"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">
-            <Icon name="mdi:weight" />
-            <span>Weight Range (hg)</span>
-          </label>
-          <div class="range-inputs">
-            <input
-              v-model.number="filters.minWeight"
-              type="number"
-              min="0"
-              max="10000"
-              placeholder="Min"
-              class="range-input"
-            />
-            <span>to</span>
-            <input
-              v-model.number="filters.maxWeight"
-              type="number"
-              min="0"
-              max="10000"
-              placeholder="Max"
-              class="range-input"
-            />
-          </div>
-        </div>
-
-        <!-- Search Button -->
-        <button class="btn-search" @click="performSearch">
-          <Icon name="mdi:magnify" />
-          <span>Search Pokémon</span>
-        </button>
+        </main>
       </div>
-
-      <!-- Results Section -->
-      <div v-if="searchPerformed" class="advanced-search__results">
-        <!-- Results Header -->
-        <div class="results-header">
-          <h3 class="results-title">
-            Search Results
-            <span class="results-count">{{ filteredPokemon.length }}</span>
-          </h3>
-        </div>
-
-        <!-- Loading -->
-        <div v-if="loading" class="loading">
-          <LoadingSpinner size="lg" message="Searching Pokémon..." />
-        </div>
-
-        <!-- Results Grid -->
-        <div v-else-if="filteredPokemon.length > 0" class="results-grid">
-          <PokemonCard
-            v-for="pokemon in filteredPokemon"
-            :key="pokemon.id"
-            :pokemon="pokemon"
-          />
-        </div>
-
-        <!-- Empty State -->
-        <EmptyState
-          v-else
-          icon="mdi:pokemon-go"
-          title="No Pokémon Found"
-          description="Try adjusting your filters to see more results"
-          action-text="Reset Filters"
-          action-icon="mdi:refresh"
-          @action="resetFilters"
-        />
-      </div>
-
-      <!-- Initial State -->
-      <EmptyState
-        v-else
-        icon="mdi:filter-cog"
-        title="Ready to Search"
-        description="Configure your filters above and click 'Search Pokémon' to find your perfect match"
-        action-text="Search All"
-        action-icon="mdi:magnify"
-        @action="performSearch"
-      />
     </div>
   </div>
 </template>
@@ -507,8 +535,8 @@ const activeFiltersCount = computed(() => {
 <style scoped lang="scss">
 .advanced-search {
   min-height: 100vh;
-  padding: $spacing-6 0;
-  background: $gray-50;
+  padding: $spacing-8 0;
+  background: linear-gradient(180deg, $bg-secondary 0%, $bg-primary 100%);
 
   &__container {
     max-width: $container-2xl;
@@ -516,62 +544,59 @@ const activeFiltersCount = computed(() => {
     padding: 0 $spacing-6;
   }
 
-  &__header {
-    margin-bottom: $spacing-6;
-  }
+  &__layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: $spacing-8;
+    align-items: start;
 
-  &__header-content {
-    @include flex-center;
-    gap: $spacing-4;
-
-    @media (max-width: $breakpoint-sm) {
-      flex-direction: column;
-      text-align: center;
+    @media (max-width: $breakpoint-lg) {
+      grid-template-columns: 1fr;
     }
   }
+}
 
-  &__header-icon {
+.page__header {
+  text-align: center;
+  margin-bottom: $spacing-10;
+
+  &-icon {
     font-size: 64px;
     color: $primary;
-    animation: pulse 2s ease-in-out infinite;
+    margin-bottom: $spacing-4;
+  }
+}
+
+// Filters Sidebar
+.filters-sidebar {
+  background: $white;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-xl;
+  position: sticky;
+  top: $spacing-6;
+  max-height: calc(100vh - #{$spacing-12});
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: $breakpoint-lg) {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-3;
+    padding: $spacing-6 $spacing-6 $spacing-4;
+    border-bottom: 1px solid $gray-200;
   }
 
   &__title {
-    margin: 0;
-    font-size: $font-size-5xl;
-    font-weight: $font-weight-bold;
-    font-family: $font-family-secondary;
-    color: $text-primary;
-
-    @media (max-width: $breakpoint-sm) {
-      font-size: $font-size-4xl;
-    }
-  }
-
-  &__subtitle {
-    margin: $spacing-1 0 0;
-    font-size: $font-size-lg;
-    color: $text-secondary;
-  }
-
-  &__filters {
-    @include flex-column;
-    gap: $spacing-4;
-    padding: $spacing-6;
-    background: $white;
-    border-radius: $radius-xl;
-    box-shadow: $shadow-md;
-    margin-bottom: $spacing-6;
-  }
-
-  &__filters-header {
-    @include flex-between;
+    display: flex;
     align-items: center;
-    gap: $spacing-3;
-  }
-
-  &__filters-title {
-    @include flex-center;
     gap: $spacing-2;
     margin: 0;
     font-size: $font-size-xl;
@@ -584,14 +609,29 @@ const activeFiltersCount = computed(() => {
     }
   }
 
-  &__results {
-    @include flex-column;
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-6;
+    display: flex;
+    flex-direction: column;
     gap: $spacing-6;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $gray-300;
+      border-radius: $radius-full;
+    }
   }
 }
 
 .filter-badge {
-  @include flex-center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 24px;
   height: 24px;
   padding: 0 $spacing-2;
@@ -604,12 +644,14 @@ const activeFiltersCount = computed(() => {
 
 .btn-reset {
   @include reset-button;
-  @include flex-center;
+  display: flex;
+  align-items: center;
   gap: $spacing-2;
-  padding: $spacing-2 $spacing-4;
+  padding: $spacing-2 $spacing-3;
   background: rgba($error, 0.1);
   color: $error;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   transition: all $transition-fast;
 
@@ -618,20 +660,22 @@ const activeFiltersCount = computed(() => {
   }
 
   svg {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
 .filter-group {
-  @include flex-column;
-  gap: $spacing-2;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
 }
 
 .filter-label {
-  @include flex-center;
+  display: flex;
+  align-items: center;
   gap: $spacing-2;
   font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-bold;
   color: $text-primary;
 
   svg {
@@ -642,14 +686,15 @@ const activeFiltersCount = computed(() => {
 
 .filter-input {
   padding: $spacing-3;
-  border: 2px solid $gray-200;
-  border-radius: $radius-lg;
+  border: 2px solid $gray-300;
+  border-radius: $radius-md;
   font-size: $font-size-base;
-  outline: none;
-  transition: border-color $transition-fast;
+  transition: all $transition-fast;
 
   &:focus {
+    outline: none;
     border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
   }
 
   &::placeholder {
@@ -659,21 +704,21 @@ const activeFiltersCount = computed(() => {
 
 .type-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: $spacing-2;
 }
 
 .type-btn {
   @include reset-button;
   padding: $spacing-2;
-  background: $white;
-  border: 2px solid $gray-200;
-  border-radius: $radius-lg;
+  background: $gray-50;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
   transition: all $transition-fast;
-  opacity: 0.5;
+  opacity: 0.4;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.7;
     transform: scale(1.05);
   }
 
@@ -686,24 +731,23 @@ const activeFiltersCount = computed(() => {
 
 .generation-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: $spacing-2;
 }
 
 .gen-btn {
   @include reset-button;
-  padding: $spacing-2 $spacing-3;
-  background: $gray-50;
+  padding: $spacing-2;
+  background: $gray-100;
   color: $text-secondary;
-  border: 2px solid $gray-200;
-  border-radius: $radius-lg;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   transition: all $transition-fast;
 
   &:hover:not(&--active) {
-    background: $gray-100;
-    border-color: $gray-300;
+    background: $gray-200;
   }
 
   &--active {
@@ -713,84 +757,166 @@ const activeFiltersCount = computed(() => {
   }
 }
 
-.range-inputs {
-  @include flex-center;
+.stat-ranges,
+.physical-ranges {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  padding: $spacing-4;
+  background: $gray-50;
+  border-radius: $radius-lg;
+}
+
+.stat-range,
+.physical-range {
+  display: flex;
+  flex-direction: column;
   gap: $spacing-2;
 
-  span {
-    color: $text-secondary;
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
     font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+
+    svg {
+      font-size: 16px;
+      color: $primary;
+    }
+  }
+
+  &__inputs {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    span {
+      color: $text-secondary;
+      font-weight: $font-weight-semibold;
+    }
   }
 }
 
-.range-input {
+.stat-input {
   flex: 1;
-  padding: $spacing-2 $spacing-3;
-  border: 2px solid $gray-200;
-  border-radius: $radius-md;
+  padding: $spacing-2;
+  border: 1px solid $gray-300;
+  border-radius: $radius-sm;
   font-size: $font-size-sm;
-  outline: none;
-  transition: border-color $transition-fast;
+  text-align: center;
 
   &:focus {
+    outline: none;
     border-color: $primary;
   }
 }
 
-.btn-search {
-  @include reset-button;
-  @include flex-center;
-  justify-content: center;
-  gap: $spacing-2;
-  padding: $spacing-4 $spacing-6;
-  background: $primary;
-  color: $white;
-  border-radius: $radius-lg;
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  box-shadow: $shadow-md;
-  transition: all $transition-base;
+.btn--full {
+  width: 100%;
+}
 
-  &:hover {
-    background: $primary-dark;
-    box-shadow: $shadow-lg;
-    transform: translateY(-2px);
+// Results Section
+.results-section {
+  min-height: 500px;
+}
+
+.welcome-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-6;
+  padding: $spacing-16 $spacing-8;
+  background: $white;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-lg;
+  text-align: center;
+
+  &__icon {
+    font-size: 96px;
+    color: $primary;
+    animation: float 3s ease-in-out infinite;
   }
+
+  &__title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  &__description {
+    font-size: $font-size-lg;
+    color: $text-secondary;
+    max-width: 500px;
+    margin: 0;
+  }
+
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    margin-top: $spacing-4;
+  }
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3 $spacing-4;
+  background: $gray-50;
+  border-radius: $radius-lg;
+  font-weight: $font-weight-medium;
 
   svg {
     font-size: 24px;
+    color: $primary;
   }
 }
 
 .results-header {
-  @include flex-between;
-  align-items: center;
+  margin-bottom: $spacing-6;
 }
 
 .results-title {
-  @include flex-center;
+  display: flex;
+  align-items: center;
   gap: $spacing-3;
-  margin: 0;
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   color: $text-primary;
+  margin: 0;
+
+  svg {
+    font-size: 28px;
+    color: $primary;
+  }
 }
 
 .results-count {
-  @include flex-center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 40px;
-  height: 40px;
+  height: 32px;
   padding: 0 $spacing-3;
   background: $primary;
   color: $white;
   border-radius: $radius-full;
-  font-size: $font-size-xl;
-  font-family: $font-family-mono;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
 }
 
-.loading {
-  @include flex-center;
-  padding: $spacing-12 0;
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-4;
+  padding: $spacing-16;
+  color: $text-secondary;
 }
 
 .results-grid {
@@ -803,12 +929,43 @@ const activeFiltersCount = computed(() => {
   }
 }
 
-@keyframes pulse {
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-4;
+  padding: $spacing-16 $spacing-8;
+  background: $white;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-lg;
+  text-align: center;
+
+  &__icon {
+    font-size: 80px;
+    color: $gray-400;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  &__description {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+@keyframes float {
   0%, 100% {
-    transform: scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: scale(1.05);
+    transform: translateY(-15px);
   }
 }
 </style>

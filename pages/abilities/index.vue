@@ -86,22 +86,31 @@ const getEnglishFlavorText = (ability: any) => {
       <div v-else class="abilities-list">
         <div v-for="ability in filteredAbilities" :key="ability.id" class="ability-card">
           <div class="ability-card__header">
-            <h3 class="ability-name">{{ ability.name.replace(/-/g, ' ') }}</h3>
+            <div class="ability-card__title">
+              <Icon name="mdi:shield-star" class="ability-icon" />
+              <h3 class="ability-name">{{ ability.name.replace(/-/g, ' ') }}</h3>
+            </div>
             <span v-if="ability.is_main_series === false" class="badge badge--special">
               Non-Main Series
             </span>
           </div>
 
           <div v-if="getEnglishFlavorText(ability)" class="ability-card__flavor">
+            <Icon name="mdi:text-box-outline" class="flavor-icon" />
             {{ getEnglishFlavorText(ability) }}
           </div>
 
           <div class="ability-card__effect">
-            <strong>Effect:</strong> {{ getEnglishEffect(ability) }}
+            <div class="effect-header">
+              <Icon name="mdi:information-outline" />
+              <strong>Effect:</strong>
+            </div>
+            <p class="effect-text">{{ getEnglishEffect(ability) }}</p>
           </div>
 
           <!-- Pokemon with this ability (if available) -->
           <div v-if="ability.pokemon?.length > 0" class="ability-card__pokemon">
+            <Icon name="mdi:pokeball" class="pokemon-icon" />
             <strong>Found on:</strong>
             <span class="pokemon-count">{{ ability.pokemon.length }} Pokémon</span>
           </div>
@@ -169,8 +178,12 @@ const getEnglishFlavorText = (ability: any) => {
 
 .abilities-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: $spacing-4;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
 
   @media (max-width: $breakpoint-sm) {
     grid-template-columns: 1fr;
@@ -203,7 +216,22 @@ const getEnglishFlavorText = (ability: any) => {
     gap: $spacing-2;
   }
 
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .ability-icon {
+      font-size: 24px;
+      color: $primary;
+      flex-shrink: 0;
+    }
+  }
+
   &__flavor {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-2;
     font-size: $font-size-sm;
     color: $text-secondary;
     font-style: italic;
@@ -216,18 +244,41 @@ const getEnglishFlavorText = (ability: any) => {
     @at-root .dark & {
       background: rgba(255, 255, 255, 0.05);
     }
+
+    .flavor-icon {
+      font-size: 18px;
+      color: $primary;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
   }
 
   &__effect {
-    font-size: $font-size-sm;
-    color: $text-primary;
-    line-height: 1.6;
     margin-bottom: $spacing-3;
 
-    strong {
-      color: $primary;
-      display: block;
-      margin-bottom: $spacing-1;
+    .effect-header {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      margin-bottom: $spacing-2;
+
+      svg {
+        font-size: 18px;
+        color: $primary;
+      }
+
+      strong {
+        color: $primary;
+        font-size: $font-size-sm;
+      }
+    }
+
+    .effect-text {
+      font-size: $font-size-sm;
+      color: $text-primary;
+      line-height: 1.6;
+      margin: 0;
+      padding-left: 26px; // Align with header text
     }
   }
 
@@ -243,6 +294,12 @@ const getEnglishFlavorText = (ability: any) => {
       border-color: rgba(255, 255, 255, 0.1);
     }
 
+    .pokemon-icon {
+      font-size: 18px;
+      color: $primary;
+      flex-shrink: 0;
+    }
+
     strong {
       color: $text-secondary;
     }
@@ -254,6 +311,7 @@ const getEnglishFlavorText = (ability: any) => {
       border-radius: $radius-sm;
       font-weight: $font-weight-semibold;
       font-size: $font-size-xs;
+      margin-left: auto;
     }
   }
 }

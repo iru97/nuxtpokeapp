@@ -14,26 +14,47 @@ useHead({
 
 const loading = ref(true)
 const pokemonData = ref<Pokemon[]>([])
+const selectedGen = ref(1)
 
-// Load Pokemon data (first 151 for performance)
-const loadPokemon = async () => {
+// Generation ranges (pokemon IDs)
+const genRanges: Record<number, { start: number; end: number; name: string }> = {
+  1: { start: 1, end: 151, name: 'Kanto' },
+  2: { start: 152, end: 251, name: 'Johto' },
+  3: { start: 252, end: 386, name: 'Hoenn' },
+  4: { start: 387, end: 493, name: 'Sinnoh' },
+  5: { start: 494, end: 649, name: 'Unova' },
+  6: { start: 650, end: 721, name: 'Kalos' },
+  7: { start: 722, end: 809, name: 'Alola' },
+  8: { start: 810, end: 905, name: 'Galar' },
+}
+
+// Load Pokemon data for selected generation
+const loadPokemon = async (gen: number) => {
   loading.value = true
   try {
+    const range = genRanges[gen]
+    if (!range) return
+
     const promises: Promise<Pokemon>[] = []
 
-    for (let i = 1; i <= 151; i++) {
+    for (let i = range.start; i <= range.end; i++) {
       promises.push(
-        $fetch<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${i}`)
+        $fetch<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${i}`).catch(() => null as any)
       )
     }
 
-    pokemonData.value = await Promise.all(promises)
+    pokemonData.value = (await Promise.all(promises)).filter(Boolean)
   } catch (err) {
     console.error('Error loading Pokemon:', err)
   } finally {
     loading.value = false
   }
 }
+
+// Watch generation change
+watch(selectedGen, (newGen) => {
+  loadPokemon(newGen)
+})
 
 // Type distribution
 const typeDistribution = computed(() => {
@@ -147,7 +168,17 @@ const physicalStats = computed(() => {
 
 // Load on mount
 onMounted(() => {
-  loadPokemon()
+  loadPokemon(selectedGen.value)
+})
+
+// Current generation name
+const currentGenName = computed(() => {
+  return genRanges[selectedGen.value]?.name || 'Kanto'
+})
+
+// Pokemon count for current gen
+const pokemonCount = computed(() => {
+  return pokemonData.value.length
 })
 
 // Format stat names
@@ -177,11 +208,31 @@ const getTotalStats = (pokemon: Pokemon) => {
       <!-- Header -->
       <div class="stats-page__header">
         <Icon name="mdi:chart-box-outline" class="stats-page__header-icon" />
-        <div>
+        <div class="stats-page__header-content">
           <h1 class="stats-page__title">Pokémon Statistics</h1>
           <p class="stats-page__subtitle">
-            Comprehensive insights from Generation I (Kanto Region)
+            Comprehensive insights from {{ currentGenName }} Region
           </p>
+        </div>
+      </div>
+
+      <!-- Generation Selector -->
+      <div class="gen-selector">
+        <h3 class="gen-selector__label">
+          <Icon name="mdi:earth" />
+          <span>Select Generation</span>
+        </h3>
+        <div class="gen-selector__buttons">
+          <button
+            v-for="gen in 8"
+            :key="gen"
+            class="gen-btn"
+            :class="{ 'gen-btn--active': selectedGen === gen }"
+            @click="selectedGen = gen"
+          >
+            <span class="gen-btn__label">Gen {{ gen }}</span>
+            <span class="gen-btn__name">{{ genRanges[gen].name }}</span>
+          </button>
         </div>
       </div>
 
@@ -408,12 +459,16 @@ const getTotalStats = (pokemon: Pokemon) => {
   &__header {
     @include flex-center;
     gap: $spacing-4;
-    margin-bottom: $spacing-8;
+    margin-bottom: $spacing-6;
 
     @media (max-width: $breakpoint-sm) {
       flex-direction: column;
       text-align: center;
     }
+  }
+
+  &__header-content {
+    flex: 1;
   }
 
   &__header-icon {
@@ -462,6 +517,10 @@ const getTotalStats = (pokemon: Pokemon) => {
   border-radius: $radius-xl;
   box-shadow: $shadow-md;
 
+  @media (max-width: $breakpoint-sm) {
+    padding: $spacing-4;
+  }
+
   &--full {
     grid-column: 1 / -1;
   }
@@ -474,9 +533,18 @@ const getTotalStats = (pokemon: Pokemon) => {
     font-weight: $font-weight-bold;
     color: $text-primary;
 
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-xl;
+      margin-bottom: $spacing-4;
+    }
+
     svg {
       font-size: 28px;
       color: $primary;
+
+      @media (max-width: $breakpoint-sm) {
+        font-size: 24px;
+      }
     }
   }
 }
@@ -558,6 +626,19 @@ const getTotalStats = (pokemon: Pokemon) => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: $spacing-4;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-3;
+  }
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .strongest-item {
@@ -596,6 +677,11 @@ const getTotalStats = (pokemon: Pokemon) => {
   width: 80px;
   height: 80px;
   object-fit: contain;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .strongest-info {
@@ -635,6 +721,11 @@ const getTotalStats = (pokemon: Pokemon) => {
   grid-template-columns: 50px 1fr;
   gap: $spacing-3;
   align-items: center;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 40px 1fr;
+    gap: $spacing-2;
+  }
 }
 
 .top-rank {
@@ -647,6 +738,12 @@ const getTotalStats = (pokemon: Pokemon) => {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   font-family: $font-family-secondary;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 40px;
+    height: 40px;
+    font-size: $font-size-lg;
+  }
 }
 
 .top-pokemon {
@@ -663,12 +760,22 @@ const getTotalStats = (pokemon: Pokemon) => {
     border-color: $primary;
     box-shadow: $shadow-md;
   }
+
+  @media (max-width: $breakpoint-sm) {
+    padding: $spacing-3;
+    gap: $spacing-2;
+  }
 }
 
 .top-image {
   width: 60px;
   height: 60px;
   object-fit: contain;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 .top-info {
@@ -683,6 +790,10 @@ const getTotalStats = (pokemon: Pokemon) => {
   font-weight: $font-weight-bold;
   color: $text-primary;
   text-transform: capitalize;
+
+  @media (max-width: $breakpoint-sm) {
+    font-size: $font-size-base;
+  }
 }
 
 .top-types {
@@ -707,12 +818,25 @@ const getTotalStats = (pokemon: Pokemon) => {
   font-weight: $font-weight-bold;
   color: $primary;
   font-family: $font-family-mono;
+
+  @media (max-width: $breakpoint-sm) {
+    font-size: $font-size-2xl;
+  }
 }
 
 .physical-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: $spacing-4;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+    gap: $spacing-3;
+  }
 }
 
 .physical-card {
@@ -774,6 +898,85 @@ const getTotalStats = (pokemon: Pokemon) => {
   }
   50% {
     transform: scale(1.05);
+  }
+}
+
+.gen-selector {
+  margin-bottom: $spacing-8;
+  padding: $spacing-6;
+  background: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+
+  &__label {
+    @include flex-center;
+    gap: $spacing-2;
+    margin: 0 0 $spacing-4;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+
+    svg {
+      font-size: 24px;
+      color: $primary;
+    }
+  }
+
+  &__buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: $spacing-3;
+
+    @media (max-width: $breakpoint-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.gen-btn {
+  @include reset-button;
+  @include flex-column;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-3;
+  background: $gray-50;
+  border: 2px solid $gray-200;
+  border-radius: $radius-lg;
+  transition: all $transition-fast;
+  cursor: pointer;
+
+  &:hover:not(&--active) {
+    background: $gray-100;
+    border-color: $gray-300;
+    transform: translateY(-2px);
+  }
+
+  &--active {
+    background: $primary;
+    border-color: $primary;
+    box-shadow: $shadow-md;
+
+    .gen-btn__label,
+    .gen-btn__name {
+      color: $white;
+    }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    transition: color $transition-fast;
+  }
+
+  &__name {
+    font-size: $font-size-xs;
+    color: $text-secondary;
+    transition: color $transition-fast;
   }
 }
 </style>
