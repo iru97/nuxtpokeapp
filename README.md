@@ -42,6 +42,95 @@ A comprehensive, modern Pokémon application built with **Nuxt 3**, **TypeScript
 - **Accessibility** - WCAG AA compliant with full keyboard navigation and screen reader support
 - **Reduced Motion** - Respects user motion preferences for accessibility
 
+### 🎯 **NEW: Competitive & Collection Features**
+
+#### **Competitive Tools**
+- **⚔️ Damage Calculator** - Complete Gen 9 damage calculator with:
+  - Pokemon vs Pokemon battle simulation
+  - Move selection with power/accuracy display
+  - Battle conditions (Weather, Terrain, Screens, Burn, Critical Hits)
+  - Stage modifiers (-6 to +6)
+  - Damage range with KO probability
+  - STAB, type effectiveness, and all damage formula modifiers
+  - Real-time calculation results
+
+- **📊 Stat Calculator** - Advanced stat calculations:
+  - IV/EV calculations with nature modifiers
+  - Stat range calculator (min/max with perfect/zero IVs)
+  - All 25 Pokemon natures supported
+  - EV spread validator (max 510 total, 252 per stat)
+
+- **🧬 Breeding Calculator** - Breeding probability system:
+  - IV inheritance calculations (Destiny Knot, Power Items)
+  - Shiny probability (Masuda Method, Shiny Charm)
+  - Egg group compatibility checker
+  - Breeding path recommendations
+  - Hatch step calculator (Flame Body effect)
+
+#### **Collection System**
+- **✅ Pokédex Checklist** - Complete collection tracker:
+  - National Dex progress (1,025 Pokémon)
+  - 9 Generation-specific checklists (Kanto through Paldea)
+  - Shiny Dex tracking
+  - Interactive grid (click to mark owned/shiny)
+  - Filter by All/Caught/Missing
+  - Daily visit streak tracking
+  - Completion percentages
+  - Export/Import collection data
+
+- **🏆 Achievement System** - Gamification with 25+ badges:
+  - **Collection Achievements** - First Catch, Kanto Master, National Dex Complete
+  - **Exploration Achievements** - View milestones, Type Expert, Daily Streaks
+  - **Team Building** - Team creator milestones
+  - **Social** - Sharing achievements
+  - **Expertise** - Calculator and comparison usage
+  - **Rare** - Hidden legendary/mythical collector achievements
+  - Progress tracking with rarity tiers (Common → Legendary)
+  - Auto-unlock on completion
+
+#### **Encyclopedia Features**
+- **🎵 Pokémon Cries** - Audio playback system:
+  - Latest cry (Gen 6+)
+  - Legacy cry (Gen 1-5)
+  - Visual waveform animation
+  - Play/pause/stop controls
+  - Audio error handling
+
+- **📖 Multiple Flavor Texts** - Complete Pokédex entries:
+  - Flavor texts from ALL game versions
+  - Grouped by generation (Gen 1-9)
+  - Expandable sections per generation
+  - Version-specific badges
+  - Entry count display
+
+- **📏 Size Comparison** - Visual size visualizer:
+  - Compare with human reference (1.7m)
+  - Size categories (Tiny → Gigantic)
+  - Weight comparisons with real objects
+  - Fun facts based on size/weight
+  - Scale markers and visual silhouettes
+
+#### **Database & Reference**
+- **⚔️ Move Database** - Complete move reference:
+  - 900+ moves with full stats
+  - Search and filter by type/category
+  - Power, Accuracy, PP, and effects
+  - Damage class indicators (Physical/Special/Status)
+  - Move effect descriptions
+
+#### **Fun & Engagement**
+- **🎲 Random Generators** - Multiple random tools:
+  - Single Random Pokémon generator
+  - Random Team Generator (1-6 Pokémon)
+  - Random Challenge Generator:
+    - Monotype challenges
+    - Generation-specific runs
+    - Nuzlocke rules
+    - Stat-limited challenges
+  - Quick generator buttons
+  - Copy team to clipboard
+  - Visual challenge badges
+
 ---
 
 ## 🎨 **Modern Design System**
