@@ -11,7 +11,7 @@
   "devDependencies": {
     "@nuxt/devtools": "^0.8.5",
     "@nuxt/fonts": "^0.12.1",
-    "@nuxt/icon": "^2.1.0",
+    "@nuxt/icon": "^1.5.5",
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/lodash-es": "^4.17.12",
