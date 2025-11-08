@@ -48,9 +48,7 @@ const handleMouseEnter = () => {
   if (hoverTimeout) {
     clearTimeout(hoverTimeout)
   }
-  hoverTimeout = setTimeout(() => {
-    openDropdown()
-  }, 200)
+  openDropdown()
 }
 
 const handleMouseLeave = () => {
@@ -59,7 +57,7 @@ const handleMouseLeave = () => {
   }
   hoverTimeout = setTimeout(() => {
     closeDropdown()
-  }, 300)
+  }, 500)
 }
 
 // Handle click (mobile/desktop toggle)
@@ -145,7 +143,6 @@ watch(() => route.path, () => {
           class="navbar-dropdown__item"
           :class="{ 'navbar-dropdown__item--active': route.path === item.to || (item.to === '/generations' && route.path.startsWith('/generations')) }"
           role="menuitem"
-          @click="closeDropdown"
         >
           <Icon :name="item.icon" aria-hidden="true" />
           <span>{{ item.label }}</span>
