@@ -225,8 +225,9 @@ const canGoNext = computed(() => props.pokemon.id < 1025)
     left: 0;
     right: 0;
     height: 100%;
-    background: linear-gradient(135deg, var(--type-color) 0%, darken(var(--type-color), 15%) 100%);
+    background: linear-gradient(135deg, var(--type-color) 0%, var(--type-color) 100%);
     opacity: 0.1;
+    filter: brightness(0.85);
   }
 
   &__container {
