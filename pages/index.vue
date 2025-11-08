@@ -26,7 +26,6 @@ const loadingPotd = ref(true)
 
 // Scroll animations and parallax
 const { parallaxStyle } = useParallax({ speed: 0.3 })
-const featuredSection = useScrollAnimation({ threshold: 0.1 })
 
 // Stats
 const stats = [
@@ -208,7 +207,7 @@ onMounted(async () => {
     </section>
 
     <!-- Featured Pokemon -->
-    <section ref="featuredSection.elementRef" class="featured scroll-fade" :class="{ 'is-visible': featuredSection.isVisible.value }">
+    <section class="featured">
       <div class="featured__container">
         <h2 class="section-title">Featured Pokémon</h2>
 
