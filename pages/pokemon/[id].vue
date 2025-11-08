@@ -78,6 +78,8 @@ const tabs = [
   { id: 'evolution', label: 'Evolution', icon: 'mdi:transit-connection-variant' },
   { id: 'moves', label: 'Moves', icon: 'mdi:sword-cross' },
   { id: 'abilities', label: 'Abilities', icon: 'mdi:shield-star' },
+  { id: 'pokedex', label: 'Pokédex', icon: 'mdi:book-open-page-variant' },
+  { id: 'size', label: 'Size', icon: 'mdi:ruler' },
   { id: 'sprites', label: 'Sprites', icon: 'mdi:image-multiple' },
 ]
 
@@ -128,6 +130,14 @@ onMounted(() => {
           <!-- Stats Tab -->
           <div v-if="activeTab === 'stats'">
             <PokemonStats :pokemon="pokemon" />
+
+            <!-- Pokemon Cries Audio -->
+            <div v-if="pokemon.cries" style="margin-top: 2rem;">
+              <PokemonCries
+                :cries="pokemon.cries"
+                :pokemon-name="pokemon.name"
+              />
+            </div>
           </div>
 
           <!-- Evolution Tab -->
@@ -143,6 +153,27 @@ onMounted(() => {
           <!-- Abilities Tab -->
           <div v-if="activeTab === 'abilities'">
             <PokemonAbilities :pokemon="pokemon" />
+          </div>
+
+          <!-- Pokedex Tab (Flavor Texts) -->
+          <div v-if="activeTab === 'pokedex'">
+            <PokemonFlavorTexts
+              v-if="species?.flavor_text_entries"
+              :flavor-text-entries="species.flavor_text_entries"
+            />
+            <div v-else class="empty-state">
+              <p>No Pokédex entries available</p>
+            </div>
+          </div>
+
+          <!-- Size Tab -->
+          <div v-if="activeTab === 'size'">
+            <PokemonSizeComparison
+              :height="pokemon.height"
+              :weight="pokemon.weight"
+              :name="pokemon.name"
+              :sprite="pokemon.sprites.other?.['official-artwork']?.front_default"
+            />
           </div>
 
           <!-- Sprites Tab -->

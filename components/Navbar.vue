@@ -35,6 +35,7 @@ const navLinks = [
   { to: '/tools/damage-calculator', label: 'Damage Calc', icon: 'mdi:calculator' },
   { to: '/tools/random-generators', label: 'Random', icon: 'mdi:dice-multiple' },
   { to: '/moves', label: 'Moves', icon: 'mdi:sword-cross' },
+  { to: '/abilities', label: 'Abilities', icon: 'mdi:shield-star' },
   { to: '/stats', label: 'Stats', icon: 'mdi:chart-box-outline' },
 ]
 
