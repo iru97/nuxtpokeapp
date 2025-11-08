@@ -69,9 +69,16 @@ const handleClick = () => {
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement
 
-  // Check if click is on a NuxtLink or its children
+  // Check if click is on ANY link (NuxtLink, anchor tag, or their children)
   const isLink = target.closest('a[href]')
 
+  // If clicking any link anywhere, let it navigate
+  // The route watcher will close the dropdown after navigation
+  if (isLink) {
+    return
+  }
+
+  // Only close dropdown if clicking outside of it and not on a link
   if (
     dropdownRef.value &&
     triggerRef.value &&
@@ -79,10 +86,6 @@ const handleClickOutside = (event: MouseEvent) => {
     !triggerRef.value.contains(target)
   ) {
     closeDropdown()
-  } else if (isLink && dropdownRef.value?.contains(target)) {
-    // If clicking a link inside dropdown, let it navigate
-    // The route watcher will close the dropdown after navigation
-    return
   }
 }
 
