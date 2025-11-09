@@ -185,20 +185,20 @@ watch(() => route.path, () => {
     position: relative;
     gap: $spacing-2;
     padding: $spacing-2 $spacing-4;
-    color: rgba($white, 0.9);
+    color: $text-secondary;
     font-weight: $font-weight-medium;
     border-radius: $radius-lg;
     transition: all $transition-fast;
     cursor: pointer;
 
     &:hover {
-      background: rgba($white, 0.1);
-      color: $white;
+      background: rgba($secondary, 0.12);
+      color: $secondary-dark;
     }
 
     &--active {
-      background: rgba($white, 0.2);
-      color: $white;
+      background: rgba($secondary, 0.15);
+      color: $secondary-dark;
 
       &::after {
         content: '';
@@ -208,7 +208,7 @@ watch(() => route.path, () => {
         transform: translateX(-50%);
         width: 20px;
         height: 3px;
-        background: $accent;
+        background: $secondary-dark;
         border-radius: $radius-full;
       }
     }
@@ -255,12 +255,12 @@ watch(() => route.path, () => {
 
     &:hover {
       background: $gray-100;
-      color: $primary;
+      color: $secondary-dark;
     }
 
     &--active {
-      background: rgba($primary, 0.1);
-      color: $primary;
+      background: rgba($secondary, 0.12);
+      color: $secondary-dark;
       font-weight: $font-weight-semibold;
     }
 

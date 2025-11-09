@@ -313,7 +313,7 @@ onMounted(() => {
   &__logo {
     @include flex-center;
     gap: $spacing-2;
-    color: $primary;
+    color: $secondary-dark;
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     font-family: $font-family-secondary;
@@ -355,20 +355,20 @@ onMounted(() => {
     position: relative;
     gap: $spacing-2;
     padding: $spacing-2 $spacing-4;
-    color: rgba($primary, 0.9);
+    color: $text-secondary;
     font-weight: $font-weight-medium;
     text-decoration: none;
     border-radius: $radius-lg;
     transition: all $transition-fast;
 
     &:hover {
-      background: rgba($primary, 0.1);
-      color: $primary;
+      background: rgba($secondary, 0.12);
+      color: $secondary-dark;
     }
 
     &--active {
-      background: rgba($primary, 0.15);
-      color: $primary;
+      background: rgba($secondary, 0.15);
+      color: $secondary-dark;
 
       &::after {
         content: '';
@@ -378,7 +378,7 @@ onMounted(() => {
         transform: translateX(-50%);
         width: 20px;
         height: 3px;
-        background: $primary;
+        background: $secondary-dark;
         border-radius: $radius-full;
       }
     }
@@ -409,15 +409,15 @@ onMounted(() => {
     @include reset-button;
     @include flex-center;
     @include spring-bounce;
-    @include accessible-focus($primary);
+    @include accessible-focus($secondary-dark);
     gap: $spacing-2;
     padding: $spacing-2 $spacing-3;
-    background: rgba($primary, 0.1);
-    color: $primary;
+    background: rgba($secondary, 0.12);
+    color: $secondary-dark;
     border-radius: $radius-lg;
 
     &:hover {
-      background: rgba($primary, 0.15);
+      background: rgba($secondary, 0.18);
     }
 
     svg {
@@ -428,7 +428,7 @@ onMounted(() => {
   &__search-hint {
     display: none;
     padding: 2px $spacing-2;
-    background: rgba($primary, 0.15);
+    background: rgba($secondary, 0.18);
     border-radius: $radius-sm;
     font-size: $font-size-xs;
     font-family: $font-family-mono;
@@ -442,14 +442,14 @@ onMounted(() => {
     @include reset-button;
     @include flex-center;
     @include spring-bounce;
-    @include accessible-focus($primary);
+    @include accessible-focus($secondary-dark);
     width: 40px;
     height: 40px;
-    color: $primary;
+    color: $secondary-dark;
     border-radius: $radius-lg;
 
     &:hover {
-      background: rgba($primary, 0.1);
+      background: rgba($secondary, 0.12);
     }
 
     svg {
@@ -517,13 +517,13 @@ onMounted(() => {
     transition: all $transition-fast;
 
     &:hover {
-      background: rgba($primary, 0.1);
-      color: $primary;
+      background: rgba($secondary, 0.12);
+      color: $secondary-dark;
     }
 
     &--active {
-      background: rgba($primary, 0.15);
-      color: $primary;
+      background: rgba($secondary, 0.15);
+      color: $secondary-dark;
     }
 
     &--sub {
