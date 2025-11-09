@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import type { Pokemon, PokemonSpecies } from '~/types'
-import { usePokemonApi } from '~/composables/api/usePokemonApi'
 
 interface PokemonState {
   pokemons: Pokemon[]
@@ -91,7 +90,8 @@ export const usePokemonStore = defineStore('pokemon', {
      * Fetch Pokemon list with pagination
      */
     async fetchPokemons(page?: number) {
-      const api = usePokemonApi()
+      const config = useRuntimeConfig()
+      const baseURL = config.public.apiBase as string
 
       if (page !== undefined) {
         this.pagination.page = page
@@ -102,35 +102,34 @@ export const usePokemonStore = defineStore('pokemon', {
       this.error.list = null
 
       try {
-        const { data, error } = await api.getPokemonList(
-          this.pagination.limit,
-          this.pagination.offset
+        // Fetch Pokemon list
+        const listData = await $fetch<any>(
+          `${baseURL}/pokemon`,
+          {
+            params: {
+              limit: this.pagination.limit,
+              offset: this.pagination.offset,
+            },
+          }
         )
 
-        if (error.value) {
-          this.error.list = error.value.message || 'Failed to fetch Pokemon'
-          return
-        }
-
-        if (!data.value) {
+        if (!listData || !listData.results) {
           this.error.list = 'No data received'
           return
         }
 
-        // Fetch detailed data for each Pokemon
-        const pokemonUrls = data.value.results.map((p) => p.url)
-        const pokemonIds = pokemonUrls.map((url) => {
-          const parts = url.split('/')
+        // Extract Pokemon IDs
+        const pokemonIds = listData.results.map((p: any) => {
+          const parts = p.url.split('/')
           return parts[parts.length - 2]
         })
 
-        const { data: detailedPokemons, error: batchError } =
-          await api.getPokemonBatch(pokemonIds)
+        // Fetch detailed data for each Pokemon
+        const pokemonPromises = pokemonIds.map((id: string) =>
+          $fetch<Pokemon>(`${baseURL}/pokemon/${id}`)
+        )
 
-        if (batchError) {
-          this.error.list = 'Failed to fetch Pokemon details'
-          return
-        }
+        const detailedPokemons = await Promise.all(pokemonPromises)
 
         if (detailedPokemons) {
           // Append to existing list
@@ -139,7 +138,7 @@ export const usePokemonStore = defineStore('pokemon', {
           this.pagination.offset += this.pagination.limit
         }
       } catch (err: any) {
-        this.error.list = err.message || 'Unknown error occurred'
+        this.error.list = err.message || 'Failed to fetch Pokemon'
       } finally {
         this.loading.list = false
       }
@@ -149,31 +148,27 @@ export const usePokemonStore = defineStore('pokemon', {
      * Fetch a single Pokemon by ID
      */
     async fetchPokemonById(id: number | string) {
-      const api = usePokemonApi()
+      const config = useRuntimeConfig()
+      const baseURL = config.public.apiBase as string
 
       this.loading.detail = true
       this.error.detail = null
       this.currentPokemon = null
 
       try {
-        const { data, error } = await api.getPokemon(id)
+        const pokemon = await $fetch<Pokemon>(`${baseURL}/pokemon/${id}`)
 
-        if (error.value) {
-          this.error.detail = error.value.message || 'Failed to fetch Pokemon'
-          return
-        }
-
-        if (data.value) {
-          this.currentPokemon = data.value
+        if (pokemon) {
+          this.currentPokemon = pokemon
 
           // Also add to list if not already there
-          const exists = this.pokemons.find((p) => p.id === data.value!.id)
+          const exists = this.pokemons.find((p) => p.id === pokemon.id)
           if (!exists) {
-            this.pokemons.push(data.value)
+            this.pokemons.push(pokemon)
           }
         }
       } catch (err: any) {
-        this.error.detail = err.message || 'Unknown error occurred'
+        this.error.detail = err.message || 'Failed to fetch Pokemon'
       } finally {
         this.loading.detail = false
       }
@@ -183,26 +178,21 @@ export const usePokemonStore = defineStore('pokemon', {
      * Fetch Pokemon species data
      */
     async fetchPokemonSpecies(id: number | string) {
-      const api = usePokemonApi()
+      const config = useRuntimeConfig()
+      const baseURL = config.public.apiBase as string
 
       this.loading.species = true
       this.error.species = null
       this.currentSpecies = null
 
       try {
-        const { data, error } = await api.getPokemonSpecies(id)
+        const species = await $fetch<PokemonSpecies>(`${baseURL}/pokemon-species/${id}`)
 
-        if (error.value) {
-          this.error.species =
-            error.value.message || 'Failed to fetch species data'
-          return
-        }
-
-        if (data.value) {
-          this.currentSpecies = data.value
+        if (species) {
+          this.currentSpecies = species
         }
       } catch (err: any) {
-        this.error.species = err.message || 'Unknown error occurred'
+        this.error.species = err.message || 'Failed to fetch species data'
       } finally {
         this.loading.species = false
       }
