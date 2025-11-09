@@ -4,6 +4,12 @@ export const TOTAL_POKEMON = 1025 // As of Gen 9
 
 export const POKEMON_PER_PAGE = 25
 
+export const POKEMON_TYPES = [
+  'normal', 'fire', 'water', 'electric', 'grass', 'ice',
+  'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug',
+  'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
+] as const
+
 export const TYPE_COLORS: Record<string, string> = {
   normal: '#aab09f',
   fire: '#ee8130',
