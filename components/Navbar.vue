@@ -176,7 +176,8 @@ onMounted(() => {
           <span class="navbar__search-hint" aria-hidden="true">⌘K</span>
         </button>
 
-        <!-- Theme Toggle -->
+        <!-- Theme Toggle - Temporarily disabled -->
+        <!--
         <button
           class="navbar__action-btn navbar__theme-toggle"
           :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
@@ -185,6 +186,7 @@ onMounted(() => {
         >
           <Icon :name="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'" aria-hidden="true" />
         </button>
+        -->
 
         <!-- Mobile Menu Toggle -->
         <button
