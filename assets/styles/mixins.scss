@@ -1,0 +1,526 @@
+@import './variables.scss';
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Responsive breakpoints
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (min-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $breakpoint == 'sm' {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// Card styling
+@mixin card($padding: $card-padding, $radius: $card-border-radius, $shadow: $card-shadow) {
+  background: $surface;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  padding: $padding;
+}
+
+@mixin card-hover {
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $card-hover-shadow;
+  }
+}
+
+// Scrollbar styling
+@mixin custom-scrollbar($width: 8px, $track-color: $gray-200, $thumb-color: $gray-400) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $radius-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $radius-full;
+
+    &:hover {
+      background: darken($thumb-color, 10%);
+    }
+  }
+}
+
+// Loading skeleton
+@mixin skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    $gray-200 0%,
+    $gray-300 50%,
+    $gray-200 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Focus styles
+@mixin focus-ring($color: $primary) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($color, 0.3);
+}
+
+// Gradient backgrounds
+@mixin gradient-background($color1, $color2, $angle: 135deg) {
+  background: linear-gradient($angle, $color1 0%, $color2 100%);
+}
+
+// Type badge styling
+@mixin type-badge($type-color) {
+  background-color: $type-color;
+  color: $white;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+  box-shadow: $shadow-sm;
+}
+
+// Glass morphism effect (enhanced with dark mode support)
+@mixin glass-morphism($opacity: 0.7, $blur: 10px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  @at-root .dark & {
+    background: rgba(30, 30, 30, $opacity);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Stat bar
+@mixin stat-bar($color, $value) {
+  position: relative;
+  height: 8px;
+  background-color: $gray-200;
+  border-radius: $radius-full;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: $value;
+    background-color: $color;
+    border-radius: $radius-full;
+    transition: width $transition-slow;
+  }
+}
+
+// Disabled state
+@mixin disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// Hover lift effect
+@mixin hover-lift($distance: -4px) {
+  transition: transform $transition-base, box-shadow $transition-base;
+
+  &:hover:not(:disabled) {
+    transform: translateY($distance);
+  }
+}
+
+// Shine effect animation
+@mixin shine-effect {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transition: left $transition-slow;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Pokemon type color getter
+@function get-type-color($type) {
+  @if $type == 'normal' { @return $type-normal; }
+  @else if $type == 'fire' { @return $type-fire; }
+  @else if $type == 'water' { @return $type-water; }
+  @else if $type == 'electric' { @return $type-electric; }
+  @else if $type == 'grass' { @return $type-grass; }
+  @else if $type == 'ice' { @return $type-ice; }
+  @else if $type == 'fighting' { @return $type-fighting; }
+  @else if $type == 'poison' { @return $type-poison; }
+  @else if $type == 'ground' { @return $type-ground; }
+  @else if $type == 'flying' { @return $type-flying; }
+  @else if $type == 'psychic' { @return $type-psychic; }
+  @else if $type == 'bug' { @return $type-bug; }
+  @else if $type == 'rock' { @return $type-rock; }
+  @else if $type == 'ghost' { @return $type-ghost; }
+  @else if $type == 'dragon' { @return $type-dragon; }
+  @else if $type == 'dark' { @return $type-dark; }
+  @else if $type == 'steel' { @return $type-steel; }
+  @else if $type == 'fairy' { @return $type-fairy; }
+  @else { @return $gray-500; }
+}
+
+// Grid layout helpers
+@mixin grid($columns: 3, $gap: $grid-gutter) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+@mixin grid-responsive {
+  display: grid;
+  gap: $grid-gutter;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+// Aspect ratio
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: ($height / $width) * 100%;
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Truncate text with specific width
+@mixin truncate($max-width: 100%) {
+  max-width: $max-width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Visually hidden but accessible
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// Reset button styles
+@mixin reset-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Overlay
+@mixin overlay($color: rgba(0, 0, 0, 0.5), $z-index: $z-index-modal-backdrop) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $color;
+  z-index: $z-index;
+}
+
+// ========================================
+// MODERNIZATION MIXINS (FASE 1-3)
+// ========================================
+
+// Accessible focus styles (WCAG AA compliant)
+@mixin accessible-focus($color: $primary, $offset: 2px, $width: 3px) {
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: $width solid $color;
+    outline-offset: $offset;
+    border-radius: $radius-sm;
+    box-shadow: 0 0 0 #{$width + $offset} rgba($color, 0.2);
+  }
+}
+
+// Reduced motion support (accessibility)
+@mixin reduced-motion-safe {
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// Spring bounce animation for buttons
+@mixin spring-bounce {
+  transition: transform 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 250ms ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity 150ms ease;
+
+    &:hover:not(:disabled),
+    &:active:not(:disabled) {
+      transform: none;
+    }
+  }
+}
+
+// Enhanced skeleton shimmer
+@mixin skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    $gray-200 0%,
+    $gray-300 20%,
+    $gray-200 40%,
+    $gray-200 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+
+  @at-root .dark & {
+    background: linear-gradient(
+      90deg,
+      #2a2a2a 0%,
+      #353535 20%,
+      #2a2a2a 40%,
+      #2a2a2a 100%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: $gray-300;
+
+    @at-root .dark & {
+      background: #2a2a2a;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Fluid typography (responsive font sizing)
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+@mixin fluid-type($min-size, $max-size, $min-screen: 375px, $max-screen: 1920px) {
+  font-size: $min-size;
+
+  @media (min-width: $min-screen) {
+    font-size: calc(
+      #{$min-size} +
+      (#{strip-unit($max-size)} - #{strip-unit($min-size)}) *
+      ((100vw - #{$min-screen}) / (#{strip-unit($max-screen)} - #{strip-unit($min-screen)}))
+    );
+  }
+
+  @media (min-width: $max-screen) {
+    font-size: $max-size;
+  }
+}
+
+// Bento grid layout (modern asymmetric grid)
+@mixin bento-grid($columns: 4, $gap: $spacing-4, $row-height: 200px) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  grid-auto-rows: $row-height;
+  gap: $gap;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Scroll fade in animation
+@mixin scroll-fade-in($delay: 0s) {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out $delay, transform 0.6s ease-out $delay;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+// 3D card tilt effect
+@mixin card-3d-tilt {
+  transform-style: preserve-3d;
+  transition: transform 150ms ease-out;
+
+  &:hover {
+    transform: perspective(1000px)
+               rotateX(var(--tilt-x, 0deg))
+               rotateY(var(--tilt-y, 0deg))
+               translateZ(20px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+
+    &:hover {
+      transform: none !important;
+    }
+  }
+}
+
+// Enhanced button with ripple effect preparation
+@mixin button-modern {
+  position: relative;
+  overflow: hidden;
+  @include spring-bounce;
+  @include accessible-focus;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  &:active::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      display: none;
+    }
+  }
+}

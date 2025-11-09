@@ -1,0 +1,633 @@
+/**
+ * Dark Theme Styles
+ * All dark mode specific styling with proper WCAG AA contrast
+ */
+
+.dark {
+  // Background colors
+  background-color: $dark-bg-primary;
+  color: $dark-text-primary;
+
+  // Global text colors
+  * {
+    color-scheme: dark;
+  }
+
+  // ========================================
+  // COMPONENT OVERRIDES
+  // ========================================
+
+  // Pokemon Card
+  .pokemon-card {
+    background: $dark-surface;
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      border-color: var(--type-color);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    &__id {
+      color: $dark-text-secondary;
+    }
+
+    &__name {
+      color: $dark-text-primary;
+    }
+
+    &__action {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: $gray-400;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &--active {
+        background-color: rgba($primary, 0.2);
+
+        &:hover {
+          background-color: rgba($primary, 0.3);
+        }
+      }
+    }
+
+    &__team {
+      &.pokemon-card__action--active {
+        background-color: rgba($success, 0.2);
+
+        &:hover {
+          background-color: rgba($success, 0.3);
+        }
+      }
+    }
+
+    &__favorite {
+      &.pokemon-card__action--active {
+        background-color: rgba($error, 0.2);
+
+        &:hover {
+          background-color: rgba($error, 0.3);
+        }
+      }
+    }
+
+    &__image {
+      background: linear-gradient(135deg, rgba(var(--type-color), 0.1) 0%, rgba(var(--type-color), 0.15) 100%);
+    }
+
+    &__stat-name {
+      color: $dark-text-secondary;
+    }
+
+    &__stat-value {
+      color: $dark-text-primary;
+    }
+
+    &__stat-bar {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__footer {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__info-item {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Navbar
+  .navbar {
+    background: linear-gradient(135deg, darken($primary, 10%) 0%, darken($primary-dark, 10%) 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  // Search Modal
+  .search-modal {
+    &__content {
+      background: rgba(30, 30, 30, 0.98);
+    }
+
+    &__icon {
+      color: $dark-text-secondary;
+    }
+
+    &__input {
+      color: $dark-text-primary;
+      background: transparent;
+
+      &::placeholder {
+        color: $dark-text-hint;
+      }
+    }
+
+    &__close {
+      color: $dark-text-secondary;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: $dark-text-primary;
+      }
+    }
+
+    &__footer {
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__hint {
+      color: $dark-text-secondary;
+
+      kbd {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: $dark-text-primary;
+      }
+    }
+  }
+
+  // Type Badges (no change needed, they use type colors)
+
+  // Filters
+  .pokemon-filters {
+    background: $dark-surface;
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &__section {
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__label {
+      color: $dark-text-primary;
+    }
+
+    &__select,
+    &__input {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: $dark-text-primary;
+
+      &:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: $primary;
+      }
+    }
+
+    &__clear {
+      color: $dark-text-secondary;
+
+      &:hover {
+        color: $error;
+      }
+    }
+  }
+
+  // Empty State
+  .empty-state {
+    &__icon {
+      color: $dark-text-disabled;
+    }
+
+    &__title {
+      color: $dark-text-primary;
+    }
+
+    &__message {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Error State
+  .error-state {
+    background-color: rgba($error, 0.1);
+    border-color: rgba($error, 0.3);
+
+    &__title {
+      color: lighten($error, 20%);
+    }
+
+    &__message {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Loading Spinner
+  .loading-spinner {
+    &__text {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Detail Pages
+  .detail-header {
+    background: linear-gradient(135deg, $dark-surface 0%, $dark-bg-secondary 100%);
+
+    &__name {
+      color: $dark-text-primary;
+    }
+
+    &__id {
+      color: $dark-text-secondary;
+    }
+
+    &__action {
+      background: rgba(255, 255, 255, 0.05);
+      color: $dark-text-primary;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      &--active {
+        background: rgba($primary, 0.2);
+        color: $white;
+      }
+    }
+
+    &__specs {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    &__spec-label {
+      color: $dark-text-secondary;
+    }
+
+    &__spec-value {
+      color: $dark-text-primary;
+    }
+
+    &__abilities {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    &__shiny-badge {
+      background: rgba($accent, 0.2);
+      color: $accent-light;
+    }
+  }
+
+  .detail-tabs {
+    background: $dark-surface;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+
+    &__tab {
+      color: $dark-text-secondary;
+
+      &:hover {
+        color: $dark-text-primary;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      &--active {
+        color: $primary;
+        border-bottom-color: $primary;
+      }
+    }
+  }
+
+  .detail-content {
+    background: $dark-bg-primary;
+  }
+
+  // Stats Tab
+  .stats-section {
+    &__stat-name {
+      color: $dark-text-secondary;
+    }
+
+    &__stat-value {
+      color: $dark-text-primary;
+    }
+
+    &__stat-bar {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // Evolution Chain
+  .evolution-chain {
+    &__stage {
+      background: $dark-surface;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__arrow {
+      color: $dark-text-disabled;
+    }
+
+    &__name {
+      color: $dark-text-primary;
+    }
+
+    &__level {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Moves Table
+  .moves-table {
+    background: $dark-surface;
+
+    thead {
+      background: $dark-bg-secondary;
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      color: $dark-text-primary;
+    }
+
+    td {
+      color: $dark-text-secondary;
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+  }
+
+  // Team Builder
+  .team-slot {
+    background: $dark-surface;
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &--empty {
+      background: rgba(255, 255, 255, 0.03);
+      border-style: dashed;
+
+      .team-slot__placeholder {
+        color: $dark-text-disabled;
+      }
+    }
+
+    &__name {
+      color: $dark-text-primary;
+    }
+
+    &__remove {
+      background: rgba($error, 0.2);
+
+      &:hover {
+        background: rgba($error, 0.3);
+      }
+    }
+  }
+
+  .team-analysis {
+    background: $dark-surface;
+
+    &__title {
+      color: $dark-text-primary;
+    }
+
+    &__subtitle {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Comparison
+  .comparison-view {
+    background: $dark-bg-primary;
+
+    &__header {
+      background: $dark-surface;
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__title {
+      color: $dark-text-primary;
+    }
+  }
+
+  .comparison-card {
+    background: $dark-surface;
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &__name {
+      color: $dark-text-primary;
+    }
+  }
+
+  // Advanced Search
+  .advanced-search {
+    &__form {
+      background: $dark-surface;
+    }
+
+    &__group-title {
+      color: $dark-text-primary;
+    }
+
+    &__label {
+      color: $dark-text-secondary;
+    }
+
+    &__input,
+    &__select {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: $dark-text-primary;
+
+      &:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: $primary;
+      }
+    }
+  }
+
+  // Stats Page
+  .stats-page {
+    background: $dark-bg-primary;
+
+    &__card {
+      background: $dark-surface;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__card-title {
+      color: $dark-text-primary;
+    }
+
+    &__card-value {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Generation Cards
+  .generation-card {
+    background: $dark-surface;
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &__name {
+      color: $dark-text-primary;
+    }
+
+    &__region {
+      color: $dark-text-secondary;
+    }
+
+    &__count {
+      color: $dark-text-disabled;
+    }
+  }
+
+  // Buttons
+  .btn {
+    &--primary {
+      background: $primary;
+      color: $white;
+
+      &:hover {
+        background: lighten($primary, 5%);
+      }
+    }
+
+    &--secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: $dark-text-primary;
+      border-color: rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    &--ghost {
+      color: $dark-text-secondary;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: $dark-text-primary;
+      }
+    }
+  }
+
+  // Form Elements
+  input,
+  textarea,
+  select {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: $dark-text-primary;
+
+    &::placeholder {
+      color: $dark-text-hint;
+    }
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: $primary;
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.02);
+      color: $dark-text-disabled;
+    }
+  }
+
+  // Links
+  a {
+    color: lighten($primary, 10%);
+
+    &:hover {
+      color: lighten($primary, 20%);
+    }
+  }
+
+  // Dividers
+  hr {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  // Page backgrounds
+  .page {
+    background: $dark-bg-primary;
+  }
+
+  .section {
+    background: $dark-surface;
+
+    &--alt {
+      background: $dark-bg-secondary;
+    }
+  }
+
+  // Hero sections
+  .hero {
+    background: linear-gradient(135deg, $dark-bg-secondary 0%, $dark-bg-primary 100%);
+
+    &__title {
+      color: $dark-text-primary;
+    }
+
+    &__subtitle {
+      color: $dark-text-secondary;
+    }
+  }
+
+  // Home page specific
+  .home {
+    background: $dark-bg-primary;
+  }
+
+  .quick-links {
+    &__item {
+      background: $dark-surface;
+      border-color: rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      }
+
+      &-title {
+        color: $dark-text-primary;
+      }
+
+      &-description {
+        color: $dark-text-secondary;
+      }
+    }
+  }
+
+  .featured-section {
+    background: $dark-bg-secondary;
+  }
+
+  // Footer (if exists)
+  .footer {
+    background: $dark-bg-secondary;
+    border-top-color: rgba(255, 255, 255, 0.1);
+    color: $dark-text-secondary;
+  }
+
+  // Scrollbars
+  ::-webkit-scrollbar-track {
+    background: $dark-bg-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  // Selection
+  ::selection {
+    background: rgba($primary, 0.4);
+    color: $white;
+  }
+
+  ::-moz-selection {
+    background: rgba($primary, 0.4);
+    color: $white;
+  }
+}
