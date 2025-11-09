@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Pokemon, PokemonSpecies } from '~/types'
+import { usePokemonApi } from '~/composables/api/usePokemonApi'
 
 interface PokemonState {
   pokemons: Pokemon[]
