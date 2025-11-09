@@ -294,8 +294,11 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: $z-index-sticky;
-  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
-  box-shadow: $shadow-md;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 
   &__container {
     @include flex-between;
@@ -308,7 +311,7 @@ onMounted(() => {
   &__logo {
     @include flex-center;
     gap: $spacing-2;
-    color: $white;
+    color: $primary;
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     font-family: $font-family-secondary;
@@ -350,20 +353,20 @@ onMounted(() => {
     position: relative;
     gap: $spacing-2;
     padding: $spacing-2 $spacing-4;
-    color: rgba($white, 0.9);
+    color: rgba($primary, 0.9);
     font-weight: $font-weight-medium;
     text-decoration: none;
     border-radius: $radius-lg;
     transition: all $transition-fast;
 
     &:hover {
-      background: rgba($white, 0.1);
-      color: $white;
+      background: rgba($primary, 0.1);
+      color: $primary;
     }
 
     &--active {
-      background: rgba($white, 0.2);
-      color: $white;
+      background: rgba($primary, 0.15);
+      color: $primary;
 
       &::after {
         content: '';
@@ -373,7 +376,7 @@ onMounted(() => {
         transform: translateX(-50%);
         width: 20px;
         height: 3px;
-        background: $accent;
+        background: $primary;
         border-radius: $radius-full;
       }
     }
@@ -404,15 +407,15 @@ onMounted(() => {
     @include reset-button;
     @include flex-center;
     @include spring-bounce;
-    @include accessible-focus($accent);
+    @include accessible-focus($primary);
     gap: $spacing-2;
     padding: $spacing-2 $spacing-3;
-    background: rgba($white, 0.1);
-    color: $white;
+    background: rgba($primary, 0.1);
+    color: $primary;
     border-radius: $radius-lg;
 
     &:hover {
-      background: rgba($white, 0.2);
+      background: rgba($primary, 0.15);
     }
 
     svg {
@@ -423,7 +426,7 @@ onMounted(() => {
   &__search-hint {
     display: none;
     padding: 2px $spacing-2;
-    background: rgba($white, 0.2);
+    background: rgba($primary, 0.15);
     border-radius: $radius-sm;
     font-size: $font-size-xs;
     font-family: $font-family-mono;
@@ -437,14 +440,14 @@ onMounted(() => {
     @include reset-button;
     @include flex-center;
     @include spring-bounce;
-    @include accessible-focus($accent);
+    @include accessible-focus($primary);
     width: 40px;
     height: 40px;
-    color: $white;
+    color: $primary;
     border-radius: $radius-lg;
 
     &:hover {
-      background: rgba($white, 0.1);
+      background: rgba($primary, 0.1);
     }
 
     svg {
@@ -457,8 +460,9 @@ onMounted(() => {
   }
 
   &__mobile-menu {
-    background: darken($primary, 5%);
-    border-top: 1px solid rgba($white, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: $shadow-lg;
     max-height: calc(100vh - 70px);
     overflow-y: auto;
@@ -483,7 +487,7 @@ onMounted(() => {
       @include flex-center;
       gap: $spacing-2;
       padding: $spacing-2 $spacing-4;
-      color: rgba($white, 0.6);
+      color: $text-secondary;
       font-size: $font-size-xs;
       font-weight: $font-weight-bold;
       text-transform: uppercase;
@@ -504,20 +508,20 @@ onMounted(() => {
     @include flex-center;
     gap: $spacing-3;
     padding: $spacing-3 $spacing-4;
-    color: rgba($white, 0.9);
+    color: $text-primary;
     font-weight: $font-weight-medium;
     text-decoration: none;
     border-radius: $radius-lg;
     transition: all $transition-fast;
 
     &:hover {
-      background: rgba($white, 0.1);
-      color: $white;
+      background: rgba($primary, 0.1);
+      color: $primary;
     }
 
     &--active {
-      background: rgba($white, 0.2);
-      color: $white;
+      background: rgba($primary, 0.15);
+      color: $primary;
     }
 
     &--sub {

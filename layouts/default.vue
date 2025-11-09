@@ -1,9 +1,9 @@
 <template>
     <div>
       <Navbar/>
-      <div class="px-2">
+      <main>
         <slot />
-      </div>
+      </main>
       <ComparisonFloatingButton />
     </div>
   </template>
@@ -16,5 +16,9 @@ const route = useRoute();
 <style>
 * {
   font-family: 'Quicksand';
+}
+
+main {
+  min-height: calc(100vh - 72px);
 }
 </style>
