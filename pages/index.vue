@@ -293,7 +293,7 @@ onMounted(async () => {
 
 // Hero Section
 .hero {
-  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  background: linear-gradient(135deg, $secondary 0%, $secondary-dark 100%);
   color: $white;
   padding: $spacing-12 0 $spacing-10;
   position: relative;

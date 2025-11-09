@@ -20,16 +20,17 @@ $type-dark: #705746;
 $type-steel: #b7b7ce;
 $type-fairy: #d685ad;
 
-// Brand Colors
-$primary: #ef5350;
-$primary-light: #ff867c;
-$primary-dark: #b61827;
-$secondary: #3b4cca;
-$secondary-light: #7b7cff;
-$secondary-dark: #002299;
-$accent: #ffde00;
-$accent-light: #ffff52;
-$accent-dark: #c7ae00;
+// Brand Colors - Pokémon Refined Palette
+// Modern take on classic Pokémon colors with reduced saturation
+$primary: #F5C518;        // Golden yellow (Pokémon yellow refined)
+$primary-light: #FFD84D;
+$primary-dark: #D4A314;
+$secondary: #5B7FFF;      // Cerulean blue (Pokémon blue modernized)
+$secondary-light: #8FA5FF;
+$secondary-dark: #3A5FDB;
+$accent: #8B5CF6;         // Purple accent (modern twist, replaces red)
+$accent-light: #A78BFA;
+$accent-dark: #7C3AED;
 
 // Neutral Colors
 $white: #ffffff;
@@ -100,20 +101,20 @@ $spacing-16: 64px;
 $spacing-20: 80px;
 $spacing-24: 96px;
 
-// Border Radius
-$radius-sm: 4px;
-$radius-md: 8px;
-$radius-lg: 12px;
-$radius-xl: 16px;
-$radius-2xl: 24px;
+// Border Radius - More generous for modern feel
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 20px;
+$radius-2xl: 28px;
 $radius-full: 9999px;
 
-// Shadows
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+// Shadows - Softer for modern design
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+$shadow-lg: 0 12px 20px -6px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+$shadow-xl: 0 20px 30px -8px rgba(0, 0, 0, 0.08), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+$shadow-2xl: 0 30px 60px -12px rgba(0, 0, 0, 0.15);
 
 // Typography
 $font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;

@@ -15,7 +15,14 @@ const route = useRoute();
 
 <style>
 * {
-  font-family: 'Quicksand';
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Keep Quicksand for headings and display text */
+h1, h2, h3, h4, h5, h6,
+.display-text,
+.navbar__logo {
+  font-family: 'Quicksand', cursive;
 }
 
 main {
